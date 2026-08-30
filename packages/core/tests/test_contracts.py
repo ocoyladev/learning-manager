@@ -68,6 +68,16 @@ def test_mastery_is_bounded() -> None:
 
 
 def test_source_requires_retrieved_at() -> None:
+    with pytest.raises(ValidationError):
+        Source(
+            id="s1",
+            url="https://kubernetes.io/docs/",
+            title="Services",
+            authority=AuthorityType.OFFICIAL,
+        )
+
+
+def test_source_optional_metadata_defaults_to_none() -> None:
     source = Source(
         id="s1",
         url="https://kubernetes.io/docs/",
