@@ -421,7 +421,7 @@ FROZEN. No agent may modify without explicit human approval."
 > Se escribe AHORA, no al final. Las trayectorias son un entregable obligatorio (§9.4) y
 > reconstruirlas a posteriori es imposible.
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 # packages/core/tests/trajectory/test_logger.py
@@ -453,11 +453,11 @@ def test_separate_file_per_agent(tmp_path: Path) -> None:
     assert files == {"Assessor.jsonl", "Researcher.jsonl"}
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 2: ejecutar y confirmar el fallo**
 
 Run: `cd packages/core && pytest tests/trajectory -v` → `ModuleNotFoundError`
 
-- [ ] **Paso 3: implementar**
+- [x] **Paso 3: implementar**
 
 ```python
 # packages/core/learning_manager/trajectory/logger.py
@@ -496,8 +496,8 @@ class TrajectoryLogger:
         return AgentTrajectory(self._dir / f"{agent}.jsonl", agent)
 ```
 
-- [ ] **Paso 4: ejecutar** → `pytest tests/trajectory -v` → 2 passed
-- [ ] **Paso 5: commit** → `git commit -m "feat(trajectory): add JSONL agent trajectory logger"`
+- [x] **Paso 4: ejecutar** → `pytest tests/trajectory -v` → 2 passed
+- [x] **Paso 5: commit** → `git commit -m "feat(trajectory): add JSONL agent trajectory logger"`
 
 ---
 
