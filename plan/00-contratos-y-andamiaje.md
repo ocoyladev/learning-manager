@@ -118,7 +118,7 @@ git commit -m "chore: scaffold repository structure and dependencies"
 **Interfaces producidas:** todo lo que consumen las 15 fases siguientes. Los nombres y tipos
 de aquí son los que verán agentes que nunca leerán esta fase.
 
-- [ ] **Paso 1: escribir el test que falla**
+- [x] **Paso 1: escribir el test que falla**
 
 ```python
 # packages/core/tests/test_contracts.py
@@ -167,12 +167,12 @@ def test_source_requires_retrieved_at() -> None:
     assert s.version is None and s.published_at is None
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 2: ejecutar y confirmar el fallo**
 
 Run: `cd packages/core && pytest tests/test_contracts.py -v`
 Esperado: `ModuleNotFoundError: No module named 'learning_manager.contracts'`
 
-- [ ] **Paso 3: escribir `contracts.py`**
+- [x] **Paso 3: escribir `contracts.py`**
 
 ```python
 """Fuente única de verdad del sistema.
@@ -394,12 +394,12 @@ class NotificationProvider(Protocol):
     def poll_replies(self) -> list[Reply]: ...
 ```
 
-- [ ] **Paso 4: ejecutar y confirmar que pasa**
+- [x] **Paso 4: ejecutar y confirmar que pasa**
 
 Run: `cd packages/core && pytest tests/test_contracts.py -v`
 Esperado: 5 passed
 
-- [ ] **Paso 5: commit y marcar como congelado**
+- [x] **Paso 5: commit y marcar como congelado**
 
 ```bash
 git add packages/core/learning_manager/contracts.py packages/core/tests/test_contracts.py
