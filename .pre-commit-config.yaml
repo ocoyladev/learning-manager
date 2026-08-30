@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+      - id: end-of-file-fixer
+  - repo: local
+    hooks:
+      - id: no-env-file
+        name: block .env files
+        entry: .githooks/no-env-file.sh
+        language: system
+        pass_filenames: false
