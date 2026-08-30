@@ -693,7 +693,7 @@ jobs:
 
 **Ficheros:** Crear `.pre-commit-config.yaml`
 
-- [ ] **Paso 1:**
+- [x] **Paso 1:**
 
 ```yaml
 repos:
@@ -713,7 +713,7 @@ repos:
         pass_filenames: false
 ```
 
-- [ ] **Paso 2:** `pre-commit install` y commit
+- [x] **Paso 2:** `pre-commit install` y commit
 
 ---
 
