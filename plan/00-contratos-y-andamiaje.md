@@ -668,7 +668,7 @@ jobs:
 
 > Desbloquea a la Pista C: la UI se construye contra el stub sin esperar a la Fase 5.
 
-- [ ] **Paso 1: definir los endpoints congelados**
+- [x] **Paso 1: definir los endpoints congelados**
 
 | Método | Ruta | Cuerpo | Devuelve |
 |---|---|---|---|
@@ -682,10 +682,10 @@ jobs:
 | GET | `/goals/{id}/dashboard` | — | `{progress, on_track, deadline_status, strong[], weak[], next_review, why, estimated_sessions, projected_completion}` |
 | POST | `/goals/{id}/simulate-day` | `{days}` | `{events: [...]}` |
 
-- [ ] **Paso 2: generar `openapi.json`** desde modelos FastAPI vacíos con esas firmas y commitearlo
-- [ ] **Paso 3: `stub.py`** — sirve `openapi.json` y devuelve datos de ejemplo fijos para cada ruta
-- [ ] **Paso 4: verificar** → `make stub-api` y `curl localhost:8001/goals/demo/dashboard` responde
-- [ ] **Paso 5: commit** → `git commit -m "feat(api): freeze OpenAPI contract and add stub server"`
+- [x] **Paso 2: generar `openapi.json`** desde modelos FastAPI vacíos con esas firmas y commitearlo
+- [x] **Paso 3: `stub.py`** — sirve `openapi.json` y devuelve datos de ejemplo fijos para cada ruta
+- [x] **Paso 4: verificar** → `make stub-api` y `curl localhost:8001/goals/demo/dashboard` responde
+- [x] **Paso 5: commit** → `git commit -m "feat(api): freeze OpenAPI contract and add stub server"`
 
 ---
 
