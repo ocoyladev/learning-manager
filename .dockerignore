@@ -1,0 +1,15 @@
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.codegraph
+.codebase-memory
+.worktrees
+**/__pycache__
+**/*.py[cod]
+**/*.egg-info
+apps/web/node_modules
+apps/web/.next
+runs
+.env

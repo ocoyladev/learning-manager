@@ -1,0 +1,86 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lm
+      POSTGRES_PASSWORD: lm
+      POSTGRES_DB: learning_manager
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lm -d learning_manager"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: packages/core/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://lm:lm@db:5432/learning_manager
+      LLM_MODE: replay
+      LLM_TEMPERATURE: "0"
+      SCHEDULER_MODE: simulation
+      NOTIFY_PROVIDER: console
+      NOTIFY_LIVE: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./corpus:/app/corpus:ro
+      - ./fixtures:/app/fixtures:ro
+      - ./runs:/app/runs
+    command: uvicorn learning_manager.api.app:app --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://localhost:8000/health')"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  worker:
+    build:
+      context: .
+      dockerfile: packages/core/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://lm:lm@db:5432/learning_manager
+      LLM_MODE: replay
+      LLM_TEMPERATURE: "0"
+      SCHEDULER_MODE: simulation
+      NOTIFY_PROVIDER: console
+      NOTIFY_LIVE: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./corpus:/app/corpus:ro
+      - ./fixtures:/app/fixtures:ro
+      - ./runs:/app/runs
+    command: python -m learning_manager.worker.tick
+
+  web:
+    build:
+      context: ./apps/web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then((response) => { if (!response.ok) process.exit(1); }).catch(() => process.exit(1));"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:
