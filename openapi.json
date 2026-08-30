@@ -1,0 +1,1288 @@
+{
+  "components": {
+    "schemas": {
+      "AssessmentItem": {
+        "properties": {
+          "concept_id": {
+            "title": "Concept Id",
+            "type": "string"
+          },
+          "expected": {
+            "title": "Expected",
+            "type": "string"
+          },
+          "explanation": {
+            "default": "",
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "concept_id",
+          "question",
+          "expected"
+        ],
+        "title": "AssessmentItem",
+        "type": "object"
+      },
+      "AssessmentResult": {
+        "properties": {
+          "concept_id": {
+            "title": "Concept Id",
+            "type": "string"
+          },
+          "correct": {
+            "title": "Correct",
+            "type": "integer"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "misconceptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Misconceptions",
+            "type": "array"
+          },
+          "score": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "number"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "concept_id",
+          "score",
+          "correct",
+          "total"
+        ],
+        "title": "AssessmentResult",
+        "type": "object"
+      },
+      "AuthorityType": {
+        "enum": [
+          "official",
+          "vendor",
+          "book",
+          "blog",
+          "tutorial",
+          "forum",
+          "unknown"
+        ],
+        "title": "AuthorityType",
+        "type": "string"
+      },
+      "BlockKind": {
+        "enum": [
+          "concept",
+          "worked_example",
+          "practice",
+          "retrieval",
+          "review"
+        ],
+        "title": "BlockKind",
+        "type": "string"
+      },
+      "Concept": {
+        "properties": {
+          "estimated_minutes": {
+            "default": 15,
+            "maximum": 180.0,
+            "minimum": 1.0,
+            "title": "Estimated Minutes",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "importance": {
+            "default": 0.5,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Importance",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prerequisites": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prerequisites",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Concept",
+        "type": "object"
+      },
+      "ConceptState": {
+        "enum": [
+          "unseen",
+          "introduced",
+          "weak",
+          "developing",
+          "mastered",
+          "review_due"
+        ],
+        "title": "ConceptState",
+        "type": "string"
+      },
+      "DeadlineStatus": {
+        "enum": [
+          "on_track",
+          "at_risk",
+          "infeasible"
+        ],
+        "title": "DeadlineStatus",
+        "type": "string"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "LearnerConceptState": {
+        "properties": {
+          "concept_id": {
+            "title": "Concept Id",
+            "type": "string"
+          },
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "last_assessed": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Assessed"
+          },
+          "last_seen": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen"
+          },
+          "mastery": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Mastery",
+            "type": "number"
+          },
+          "misconceptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Misconceptions",
+            "type": "array"
+          },
+          "next_review": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Review"
+          },
+          "state": {
+            "$ref": "#/components/schemas/ConceptState"
+          }
+        },
+        "required": [
+          "concept_id",
+          "mastery",
+          "confidence",
+          "state"
+        ],
+        "title": "LearnerConceptState",
+        "type": "object"
+      },
+      "LearnerModel": {
+        "properties": {
+          "concepts": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LearnerConceptState"
+            },
+            "title": "Concepts",
+            "type": "object"
+          },
+          "goal_id": {
+            "title": "Goal Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "goal_id"
+        ],
+        "title": "LearnerModel",
+        "type": "object"
+      },
+      "LearningGoal": {
+        "properties": {
+          "daily_minutes": {
+            "maximum": 240.0,
+            "minimum": 5.0,
+            "title": "Daily Minutes",
+            "type": "integer"
+          },
+          "deadline": {
+            "format": "date",
+            "title": "Deadline",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "preferred_formats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Preferred Formats",
+            "type": "array"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "success_criteria": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Success Criteria",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "purpose",
+          "deadline",
+          "daily_minutes"
+        ],
+        "title": "LearningGoal",
+        "type": "object"
+      },
+      "NextSessionDecision": {
+        "description": "Output of CurriculumPlanner, scored by NSDQ.",
+        "properties": {
+          "blocks": {
+            "items": {
+              "$ref": "#/components/schemas/SessionBlock"
+            },
+            "title": "Blocks",
+            "type": "array"
+          },
+          "deadline_status": {
+            "$ref": "#/components/schemas/DeadlineStatus"
+          },
+          "deferred_concepts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Deferred Concepts",
+            "type": "array"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "reviews_included": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reviews Included",
+            "type": "array"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "total_minutes": {
+            "minimum": 0.0,
+            "title": "Total Minutes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_date",
+          "blocks",
+          "total_minutes",
+          "rationale",
+          "deadline_status"
+        ],
+        "title": "NextSessionDecision",
+        "type": "object"
+      },
+      "SessionBlock": {
+        "properties": {
+          "concept_id": {
+            "title": "Concept Id",
+            "type": "string"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/BlockKind"
+          },
+          "minutes": {
+            "maximum": 180.0,
+            "minimum": 1.0,
+            "title": "Minutes",
+            "type": "integer"
+          },
+          "objective": {
+            "title": "Objective",
+            "type": "string"
+          },
+          "source_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind",
+          "concept_id",
+          "minutes",
+          "objective"
+        ],
+        "title": "SessionBlock",
+        "type": "object"
+      },
+      "Source": {
+        "properties": {
+          "authority": {
+            "$ref": "#/components/schemas/AuthorityType"
+          },
+          "content_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Path"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "retrieved_at": {
+            "format": "date",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "title",
+          "authority",
+          "retrieved_at"
+        ],
+        "title": "Source",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "_Answer": {
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "answer"
+        ],
+        "title": "_Answer",
+        "type": "object"
+      },
+      "_AnswersRequest": {
+        "properties": {
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/_Answer"
+            },
+            "title": "Answers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "answers"
+        ],
+        "title": "_AnswersRequest",
+        "type": "object"
+      },
+      "_AssessmentResponse": {
+        "properties": {
+          "learner_model": {
+            "$ref": "#/components/schemas/LearnerModel"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/AssessmentResult"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results",
+          "learner_model"
+        ],
+        "title": "_AssessmentResponse",
+        "type": "object"
+      },
+      "_DashboardResponse": {
+        "properties": {
+          "deadline_status": {
+            "$ref": "#/components/schemas/DeadlineStatus"
+          },
+          "estimated_sessions": {
+            "title": "Estimated Sessions",
+            "type": "integer"
+          },
+          "next_review": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Review"
+          },
+          "on_track": {
+            "title": "On Track",
+            "type": "boolean"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "number"
+          },
+          "projected_completion": {
+            "format": "date",
+            "title": "Projected Completion",
+            "type": "string"
+          },
+          "strong": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Strong",
+            "type": "array"
+          },
+          "weak": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weak",
+            "type": "array"
+          },
+          "why": {
+            "title": "Why",
+            "type": "string"
+          }
+        },
+        "required": [
+          "progress",
+          "on_track",
+          "deadline_status",
+          "strong",
+          "weak",
+          "next_review",
+          "why",
+          "estimated_sessions",
+          "projected_completion"
+        ],
+        "title": "_DashboardResponse",
+        "type": "object"
+      },
+      "_DiagnosticResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AssessmentItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "_DiagnosticResponse",
+        "type": "object"
+      },
+      "_Event": {
+        "properties": {
+          "day": {
+            "title": "Day",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "day",
+          "kind",
+          "message"
+        ],
+        "title": "_Event",
+        "type": "object"
+      },
+      "_GoalDetailsResponse": {
+        "properties": {
+          "concepts": {
+            "items": {
+              "$ref": "#/components/schemas/Concept"
+            },
+            "title": "Concepts",
+            "type": "array"
+          },
+          "goal": {
+            "$ref": "#/components/schemas/LearningGoal"
+          },
+          "learner_model": {
+            "$ref": "#/components/schemas/LearnerModel"
+          }
+        },
+        "required": [
+          "goal",
+          "concepts",
+          "learner_model"
+        ],
+        "title": "_GoalDetailsResponse",
+        "type": "object"
+      },
+      "_GoalRequest": {
+        "properties": {
+          "daily_minutes": {
+            "maximum": 240.0,
+            "minimum": 5.0,
+            "title": "Daily Minutes",
+            "type": "integer"
+          },
+          "deadline": {
+            "format": "date",
+            "title": "Deadline",
+            "type": "string"
+          },
+          "preferred_formats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Preferred Formats",
+            "type": "array"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "purpose",
+          "deadline",
+          "daily_minutes"
+        ],
+        "title": "_GoalRequest",
+        "type": "object"
+      },
+      "_GoalResponse": {
+        "properties": {
+          "concepts": {
+            "items": {
+              "$ref": "#/components/schemas/Concept"
+            },
+            "title": "Concepts",
+            "type": "array"
+          },
+          "goal": {
+            "$ref": "#/components/schemas/LearningGoal"
+          }
+        },
+        "required": [
+          "goal",
+          "concepts"
+        ],
+        "title": "_GoalResponse",
+        "type": "object"
+      },
+      "_LearnerResponse": {
+        "properties": {
+          "learner_model": {
+            "$ref": "#/components/schemas/LearnerModel"
+          }
+        },
+        "required": [
+          "learner_model"
+        ],
+        "title": "_LearnerResponse",
+        "type": "object"
+      },
+      "_ResearchRequest": {
+        "properties": {
+          "topic": {
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic"
+        ],
+        "title": "_ResearchRequest",
+        "type": "object"
+      },
+      "_ResearchResponse": {
+        "properties": {
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sources"
+        ],
+        "title": "_ResearchResponse",
+        "type": "object"
+      },
+      "_SimulateDayRequest": {
+        "properties": {
+          "days": {
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "days"
+        ],
+        "title": "_SimulateDayRequest",
+        "type": "object"
+      },
+      "_SimulateDayResponse": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/_Event"
+            },
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "events"
+        ],
+        "title": "_SimulateDayResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Learning Manager API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/goals": {
+      "post": {
+        "operationId": "create_goal_goals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_GoalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_GoalResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Goal"
+      }
+    },
+    "/goals/{goal_id}": {
+      "get": {
+        "operationId": "get_goal_goals__goal_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_GoalDetailsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Goal"
+      }
+    },
+    "/goals/{goal_id}/dashboard": {
+      "get": {
+        "operationId": "dashboard_goals__goal_id__dashboard_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_DashboardResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dashboard"
+      }
+    },
+    "/goals/{goal_id}/diagnostic": {
+      "post": {
+        "operationId": "diagnostic_goals__goal_id__diagnostic_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_DiagnosticResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Diagnostic"
+      }
+    },
+    "/goals/{goal_id}/diagnostic/answers": {
+      "post": {
+        "operationId": "diagnostic_answers_goals__goal_id__diagnostic_answers_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_AnswersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_LearnerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Diagnostic Answers"
+      }
+    },
+    "/goals/{goal_id}/next-session": {
+      "get": {
+        "operationId": "next_session_goals__goal_id__next_session_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "today",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Today",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NextSessionDecision"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Next Session"
+      }
+    },
+    "/goals/{goal_id}/research": {
+      "post": {
+        "operationId": "research_goals__goal_id__research_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_ResearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_ResearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Research"
+      }
+    },
+    "/goals/{goal_id}/simulate-day": {
+      "post": {
+        "operationId": "simulate_day_goals__goal_id__simulate_day_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_SimulateDayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_SimulateDayResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Simulate Day"
+      }
+    },
+    "/sessions/{session_id}/assess": {
+      "post": {
+        "operationId": "assess_sessions__session_id__assess_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_AnswersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_AssessmentResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Assess"
+      }
+    }
+  }
+}
