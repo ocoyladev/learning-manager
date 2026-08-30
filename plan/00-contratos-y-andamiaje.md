@@ -17,7 +17,7 @@
 - Crear: `packages/core/pyproject.toml`, `packages/core/learning_manager/__init__.py`,
   `packages/core/tests/__init__.py`, `Makefile`, `.env.example`
 
-- [ ] **Paso 1: crear el árbol de directorios**
+- [x] **Paso 1: crear el árbol de directorios**
 
 ```bash
 mkdir -p packages/core/learning_manager/{domain,scheduler,verification,trajectory,agents/prompts,persistence/migrations,api/routers,worker,providers/{llm,knowledge,notify}}
@@ -26,7 +26,7 @@ mkdir -p eval/{cases/nsdq,cases/sources,keys,baseline,graders} corpus fixtures/c
 find packages/core/learning_manager packages/core/tests -type d -exec touch {}/__init__.py \;
 ```
 
-- [ ] **Paso 2: `packages/core/pyproject.toml`**
+- [x] **Paso 2: `packages/core/pyproject.toml`**
 
 ```toml
 [project]
@@ -71,7 +71,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 ```
 
-- [ ] **Paso 3: `.env.example`** (se commitea; `.env` NO)
+- [x] **Paso 3: `.env.example`** (se commitea; `.env` NO)
 
 ```bash
 # ---- LLM ----
@@ -100,7 +100,7 @@ WHATSAPP_ACCESS_TOKEN=
 TRAJECTORY_DIR=./runs
 ```
 
-- [ ] **Paso 4: commit**
+- [x] **Paso 4: commit**
 
 ```bash
 git add packages/core/pyproject.toml .env.example
