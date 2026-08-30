@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Create virtual environment
+        run: python -m venv .venv
+
+      - name: Install core dependencies
+        run: .venv/bin/python -m pip install -e "packages/core[dev]"
+
+      - name: Typecheck core
+        run: .venv/bin/mypy packages/core/learning_manager
+
+      - name: Check core lint
+        run: .venv/bin/ruff check packages/core
+
+      - name: Check core formatting
+        run: .venv/bin/ruff format --check packages/core
+
+      - name: Test core with coverage
+        run: >-
+          .venv/bin/pytest packages/core
+          --cov=packages/core/learning_manager
+          --cov-report=term-missing
+
+      # Phase 9 removes this exception when the deterministic evaluation runner exists.
+      - name: Run deterministic evaluation
+        continue-on-error: true
+        env:
+          LLM_MODE: replay
+        run: .venv/bin/python -m eval.runner --name ci --check-determinism
+
+      - name: Reject tracked environment files
+        shell: bash
+        run: |
+          if git ls-files | awk -F/ '$NF == ".env" { found = 1 } END { exit !found }'; then
+            echo "ERROR: tracked .env file detected"
+            exit 1
+          fi
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install web dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Typecheck web
+        working-directory: apps/web
+        run: npm run typecheck
+
+      - name: Lint web
+        working-directory: apps/web
+        run: npm run lint
+
+      - name: Build web
+        working-directory: apps/web
+        run: npm run build
