@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Entorno — NUNCA commitear
+.env
+.env.local
+*.key
+
+# Datos locales
+pgdata/
+*.db
+
+# Artefactos de ejecución que NO se commitean
+runs/
+.coverage
+htmlcov/
+
+# SI se commitean (no ignorar): corpus/, fixtures/cassettes/, experiments/, trajectories/

@@ -1,0 +1,31 @@
+---
+description: Reglas del proyecto Learning Manager (hackathon micro1)
+alwaysApply: true
+---
+
+Lee `AGENTS.md` antes de tocar nada. Después `PLAN.md` y tu fase en `plan/NN-*.md`.
+
+## Restricciones que no se negocian
+
+- `packages/core/learning_manager/contracts.py` y `openapi.json` son **de solo lectura** tras la
+  Fase 0. Si crees que necesitas cambiarlos, para y pregunta.
+- No escribas fuera de los directorios de tu pista (tabla en `PLAN.md`).
+- Cero dependencia de suscripciones: el único acceso a LLM es `GEMINI_API_KEY` con `google-genai`.
+- Prohibido `whatsapp-web.js` y cualquier librería de ingeniería inversa (regla R3 de las bases).
+- Ninguna fecha desde `datetime.now()` en lógica de negocio: siempre `today: date` por parámetro.
+- Temperatura 0 en todas las llamadas.
+- `.env` nunca se commitea.
+- Nada de `print` ni `console.log`: usa el logger.
+
+## Si trabajas en la UI (Pista C)
+
+- Construye contra `make stub-api` en `:8001`. No esperes al backend.
+- Genera los tipos desde `openapi.json` con `openapi-typescript`. No los escribas a mano.
+- **Cero lógica de negocio en el cliente**: nada de umbrales de mastery, aritmética de fechas de
+  repaso ni selección de conceptos en React.
+- Lo que sí importa que hagas bien: el `rationale` de la sesión, el knowledge map, el panel de
+  fuentes y los controles humanos. Es lo que se ve en el vídeo.
+
+## Antes de cada commit
+
+`make check` (ruff + mypy --strict + pytest) en verde. Conventional Commits.
