@@ -10,7 +10,9 @@ COPY packages/core /app/packages/core
 RUN pip install --upgrade pip \
     && pip install /app/packages/core \
     && groupadd --system app \
-    && useradd --system --gid app --create-home app
+    && useradd --system --gid app --create-home app \
+    && mkdir --parents /app/runs \
+    && chown app:app /app/runs
 
 USER app
 
