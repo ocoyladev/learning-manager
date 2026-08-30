@@ -7,6 +7,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app/packages/core
 
 COPY packages/core /app/packages/core
+COPY eval /app/eval
 RUN pip install --upgrade pip \
     && pip install /app/packages/core \
     && groupadd --system app \
