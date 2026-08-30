@@ -623,7 +623,7 @@ trajectories:
 
 > Con tres agentes en paralelo, CI es lo único que detecta que una pista rompió a otra.
 
-- [ ] **Paso 1: escribir el workflow**
+- [x] **Paso 1: escribir el workflow**
 
 ```yaml
 name: CI
@@ -658,7 +658,7 @@ jobs:
 > `--check-determinism` ejecuta el runner dos veces y falla si los resultados difieren.
 > Se implementa en la Fase 9; hasta entonces el paso puede marcarse `continue-on-error: true`.
 
-- [ ] **Paso 2: commit** → `git commit -m "ci: add lint, typecheck, test and determinism gate"`
+- [x] **Paso 2: commit** → `git commit -m "ci: add lint, typecheck, test and determinism gate"`
 
 ---
 
