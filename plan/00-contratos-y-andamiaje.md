@@ -719,11 +719,11 @@ repos:
 
 ## ✅ Criterio de salida — CP0
 
-- [ ] `contracts.py` commiteado y sus tests pasan
-- [ ] `make check` en verde
-- [ ] `docker compose up` levanta `db`, `api`, `worker`, `web` sin errores
+- [x] `contracts.py` commiteado y sus tests pasan
+- [x] `make check` en verde
+- [x] `docker compose up` levanta `db`, `api`, `worker`, `web` sin errores
 - [ ] CI verde en el primer push
-- [ ] `make stub-api` responde en `:8001`
-- [ ] `TrajectoryLogger` escribe JSONL correcto
-- [ ] `.env` bloqueado por el hook
+- [x] `make stub-api` responde en `:8001`
+- [x] `TrajectoryLogger` escribe JSONL correcto
+- [x] `.env` bloqueado por el hook
 - [ ] **Solo entonces:** crear `track/a-core`, `track/b-eval`, `track/c-ui` y lanzar las 3 pistas
