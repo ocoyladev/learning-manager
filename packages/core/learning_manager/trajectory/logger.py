@@ -17,12 +17,14 @@ class AgentTrajectory:
 
     def step(self, step: str, **fields: object) -> None:
         """Write one timestamped step and its arbitrary JSON-compatible fields."""
-        record: dict[str, object] = {
-            "ts": datetime.now(UTC).isoformat(),
-            "agent": self._agent,
-            "step": step,
-        }
-        record.update(fields)
+        record: dict[str, object] = dict(fields)
+        record.update(
+            {
+                "ts": datetime.now(UTC).isoformat(),
+                "agent": self._agent,
+                "step": step,
+            }
+        )
         with self._path.open("a", encoding="utf-8") as file_handle:
             file_handle.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
 

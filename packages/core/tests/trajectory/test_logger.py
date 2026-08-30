@@ -25,3 +25,13 @@ def test_separate_file_per_agent(tmp_path: Path) -> None:
     log.for_agent("Researcher").step("start")
     files = {p.name for p in (tmp_path / "run2").iterdir()}
     assert files == {"Assessor.jsonl", "Researcher.jsonl"}
+
+
+def test_reserved_metadata_cannot_be_overridden(tmp_path: Path) -> None:
+    log = TrajectoryLogger(run_dir=tmp_path, run_id="run3")
+    log.for_agent("Assessor").step("start", agent="Imposter", ts="invalid")
+
+    record = json.loads((tmp_path / "run3" / "Assessor.jsonl").read_text())
+    assert record["agent"] == "Assessor"
+    assert record["ts"] != "invalid"
+    assert record["step"] == "start"

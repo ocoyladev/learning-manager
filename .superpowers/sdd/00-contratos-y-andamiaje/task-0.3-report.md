@@ -42,3 +42,36 @@ Commands were run in the requested order after focused GREEN:
 ## Concerns
 
 Running strict mypy over both source and tests (`mypy --strict learning_manager tests`) reports one pre-existing error in `tests/test_contracts.py:72`: missing named argument `retrieved_at` for `Source`. This task does not modify that test or the frozen contracts module.
+
+## Fix Round 1
+
+### Finding
+
+`record.update(fields)` allowed callers to overwrite required `agent`, `ts`, and `step` metadata.
+
+### TDD evidence
+
+Added `test_reserved_metadata_cannot_be_overridden` to `packages/core/tests/trajectory/test_logger.py`. The first focused run failed with the expected assertion because `agent` was overwritten with `Imposter`:
+
+```text
+cd packages/core && ../../.venv/bin/pytest tests/trajectory/test_logger.py -v
+...
+1 failed, 2 passed
+AssertionError: assert 'Imposter' == 'Assessor'
+```
+
+The implementation now applies arbitrary fields first, then applies the required metadata so reserved values always win.
+
+### Verification
+
+```text
+cd packages/core && ../../.venv/bin/pytest tests/trajectory/test_logger.py -v
+```
+
+Result: `3 passed`.
+
+```text
+cd packages/core && ../../.venv/bin/pytest -q
+```
+
+Result: `10 passed`.
