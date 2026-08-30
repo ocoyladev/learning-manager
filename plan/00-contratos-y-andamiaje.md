@@ -505,7 +505,7 @@ class TrajectoryLogger:
 
 **Ficheros:** Crear `docker-compose.yml`, `packages/core/Dockerfile`, `apps/web/Dockerfile`, `Makefile`
 
-- [ ] **Paso 1: `docker-compose.yml`**
+- [x] **Paso 1: `docker-compose.yml`**
 
 ```yaml
 services:
@@ -560,7 +560,7 @@ volumes:
   pgdata:
 ```
 
-- [ ] **Paso 2: `packages/core/Dockerfile`**
+- [x] **Paso 2: `packages/core/Dockerfile`**
 
 ```dockerfile
 FROM python:3.12-slim
@@ -573,7 +573,7 @@ COPY eval /app/eval
 ENV PYTHONPATH=/app/packages/core
 ```
 
-- [ ] **Paso 3: `Makefile`**
+- [x] **Paso 3: `Makefile`**
 
 ```makefile
 .PHONY: setup up down check test stub-api eval-replay eval-live record simulate trajectories
@@ -612,8 +612,8 @@ trajectories:
 	python -m learning_manager.cli export-trajectories --out trajectories/
 ```
 
-- [ ] **Paso 4: verificar** → `docker compose config -q` sin errores; `make up` levanta `db` y `api` sanos
-- [ ] **Paso 5: commit** → `git commit -m "chore: add docker compose stack and Makefile"`
+- [x] **Paso 4: verificar** → `docker compose config -q` sin errores; `make up` levanta `db` y `api` sanos
+- [x] **Paso 5: commit** → `git commit -m "chore: add docker compose stack and Makefile"`
 
 ---
 
