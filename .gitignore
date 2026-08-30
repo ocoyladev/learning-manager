@@ -12,6 +12,9 @@ node_modules/
 .next/
 out/
 
+# Isolated agent worktrees
+.worktrees/
+
 # Entorno — NUNCA commitear
 .env
 .env.local
