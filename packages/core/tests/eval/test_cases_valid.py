@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 
 import pytest
+from learning_manager.domain.concept_graph import ConceptGraph
 
 from learning_manager.contracts import Concept, LearnerConceptState, LearningGoal
-from learning_manager.domain.concept_graph import ConceptGraph
 
 ROOT = Path(__file__).parents[4]
 CASES = sorted(ROOT.joinpath("eval/cases/nsdq").glob("*.json"))
