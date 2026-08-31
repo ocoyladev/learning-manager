@@ -219,8 +219,8 @@ def test_official_source_wins_over_blog_on_conflict() -> None:
 
 ## ✅ Criterio de salida
 
-- [ ] `CorpusProvider` y `LiveSearchProvider` implementan la misma interfaz y son intercambiables
-- [ ] La clasificación de autoridad es determinista y sin LLM
-- [ ] `NotebookLMProvider` documenta la interfaz y lanza `NotImplementedError` explicando §17
-- [ ] Ninguna llamada a red en la suite de tests
-- [ ] `make check` en verde
+- [x] `CorpusProvider` y `LiveSearchProvider` implementan la misma interfaz y son intercambiables
+- [x] La clasificación de autoridad es determinista y sin LLM
+- [x] `NotebookLMProvider` documenta la interfaz y lanza `NotImplementedError` explicando §17
+- [x] Ninguna llamada a red en la suite de tests
+- [x] `make check` en verde
