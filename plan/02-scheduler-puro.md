@@ -23,7 +23,7 @@
 `due_reviews(model: LearnerModel, today: date) -> list[str]`
 `prioritize_reviews(model: LearnerModel, due: list[str], budget_minutes: int, graph: ConceptGraph) -> list[str]`
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 # packages/core/tests/scheduler/test_spacing.py
@@ -78,11 +78,11 @@ def test_review_storm_is_prioritized_by_weakness_within_budget() -> None:
     assert len(ordered) <= 2       # no desborda el presupuesto (5 min por repaso)
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 2: ejecutar y confirmar el fallo**
 
 Run: `cd packages/core && pytest tests/scheduler -v` → `ModuleNotFoundError`
 
-- [ ] **Paso 3: implementar**
+- [x] **Paso 3: implementar**
 
 ```python
 # packages/core/learning_manager/scheduler/spacing.py
@@ -135,8 +135,8 @@ def prioritize_reviews(
     return ordered[:capacity]
 ```
 
-- [ ] **Paso 4: ejecutar** → 12 passed (8 parametrizados + 4)
-- [ ] **Paso 5: commit** → `git commit -m "feat(scheduler): add deterministic spaced review scheduling"`
+- [x] **Paso 4: ejecutar** → 12 passed (8 parametrizados + 4)
+- [x] **Paso 5: commit** → `git commit -m "feat(scheduler): add deterministic spaced review scheduling"`
 
 ---
 
@@ -155,7 +155,7 @@ def prioritize_reviews(
 > Failure mode §47.2: deadline irreal. El sistema debe **decirlo**, no fingir que cabe.
 > Es la comprobación 6 de NSDQ.
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 # packages/core/tests/scheduler/test_feasibility.py
@@ -227,8 +227,8 @@ def test_deadline_in_the_past_is_infeasible() -> None:
 > 2. `available_minutes` cuenta los días **de forma inclusiva**: hoy y el día del deadline
 >    ambos cuentan. Es decir `(deadline - today).days + 1`, con suelo en 0.
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar**
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar**
 
 ```python
 # packages/core/learning_manager/scheduler/feasibility.py
@@ -276,16 +276,16 @@ def deadline_status(
     return DeadlineStatus.ON_TRACK
 ```
 
-- [ ] **Paso 4: ejecutar** → 7 passed. Los números de los tests están calculados con las dos
+- [x] **Paso 4: ejecutar** → 7 passed. Los números de los tests están calculados con las dos
       convenciones de arriba; si alguno falla, el bug está en la implementación, no en el test.
       **No cambies un valor esperado para que pase**: verifica primero la aritmética a mano.
-- [ ] **Paso 5: commit** → `git commit -m "feat(scheduler): add deadline feasibility assessment"`
+- [x] **Paso 5: commit** → `git commit -m "feat(scheduler): add deadline feasibility assessment"`
 
 ---
 
 ## ✅ Criterio de salida
 
-- [ ] Cobertura del 100 % en `scheduler/` (son funciones puras: no hay excusa)
-- [ ] Ni un solo `datetime.now()` en el módulo — verificado con `grep -r "datetime.now" scheduler/`
-- [ ] Ninguna importación de `providers/` ni de `agents/`
-- [ ] `make check` en verde
+- [x] Cobertura del 100 % en `scheduler/` (son funciones puras: no hay excusa)
+- [x] Ni un solo `datetime.now()` en el módulo — verificado con `grep -r "datetime.now" scheduler/`
+- [x] Ninguna importación de `providers/` ni de `agents/`
+- [x] `make check` en verde

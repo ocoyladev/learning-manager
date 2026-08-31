@@ -55,6 +55,11 @@ class ConceptGraph:
         """Return concept IDs in deterministic prerequisite-first order."""
         return list(self._order)
 
+    @property
+    def concepts(self) -> list[Concept]:
+        """Return concepts in deterministic prerequisite-first order."""
+        return [self._concepts[concept_id] for concept_id in self._order]
+
     def detect_cycle(self) -> list[str] | None:
         """Return ``None`` for this validated acyclic graph.
 
