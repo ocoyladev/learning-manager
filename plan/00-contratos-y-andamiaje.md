@@ -722,8 +722,8 @@ repos:
 - [x] `contracts.py` commiteado y sus tests pasan
 - [x] `make check` en verde
 - [x] `docker compose up` levanta `db`, `api`, `worker`, `web` sin errores
-- [ ] CI verde en el primer push
+- [x] CI verde en el primer push
 - [x] `make stub-api` responde en `:8001`
 - [x] `TrajectoryLogger` escribe JSONL correcto
 - [x] `.env` bloqueado por el hook
-- [ ] **Solo entonces:** crear `track/a-core`, `track/b-eval`, `track/c-ui` y lanzar las 3 pistas
+- [x] **Solo entonces:** crear `track/a-core`, `track/b-eval`, `track/c-ui` y lanzar las 3 pistas
