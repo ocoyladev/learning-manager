@@ -562,6 +562,45 @@
         "title": "ValidationError",
         "type": "object"
       },
+      "_AcceptedResponse": {
+        "properties": {
+          "accepted": {
+            "title": "Accepted",
+            "type": "boolean"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accepted",
+          "message"
+        ],
+        "title": "_AcceptedResponse",
+        "type": "object"
+      },
+      "_AlternativeExplanationResponse": {
+        "properties": {
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "source_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "content",
+          "source_ids"
+        ],
+        "title": "_AlternativeExplanationResponse",
+        "type": "object"
+      },
       "_Answer": {
         "properties": {
           "answer": {
@@ -804,6 +843,53 @@
         "title": "_GoalResponse",
         "type": "object"
       },
+      "_GoalUpdateRequest": {
+        "properties": {
+          "daily_minutes": {
+            "anyOf": [
+              {
+                "maximum": 240.0,
+                "minimum": 5.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Minutes"
+          },
+          "paused": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paused"
+          }
+        },
+        "title": "_GoalUpdateRequest",
+        "type": "object"
+      },
+      "_GoalUpdateResponse": {
+        "properties": {
+          "goal": {
+            "$ref": "#/components/schemas/LearningGoal"
+          },
+          "paused": {
+            "title": "Paused",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "goal",
+          "paused"
+        ],
+        "title": "_GoalUpdateResponse",
+        "type": "object"
+      },
       "_LearnerResponse": {
         "properties": {
           "learner_model": {
@@ -814,6 +900,20 @@
           "learner_model"
         ],
         "title": "_LearnerResponse",
+        "type": "object"
+      },
+      "_RecommendationRejectionRequest": {
+        "properties": {
+          "reason": {
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "_RecommendationRejectionRequest",
         "type": "object"
       },
       "_ResearchRequest": {
@@ -843,6 +943,31 @@
           "sources"
         ],
         "title": "_ResearchResponse",
+        "type": "object"
+      },
+      "_SessionFeedbackRequest": {
+        "properties": {
+          "appropriate": {
+            "title": "Appropriate",
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "appropriate"
+        ],
+        "title": "_SessionFeedbackRequest",
         "type": "object"
       },
       "_SimulateDayRequest": {
@@ -959,6 +1084,53 @@
           }
         },
         "summary": "Get Goal"
+      },
+      "patch": {
+        "operationId": "update_goal_goals__goal_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_GoalUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_GoalUpdateResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Goal"
       }
     },
     "/goals/{goal_id}/dashboard": {
@@ -1137,6 +1309,55 @@
         "summary": "Next Session"
       }
     },
+    "/goals/{goal_id}/recommendations/reject": {
+      "post": {
+        "operationId": "reject_recommendation_goals__goal_id__recommendations_reject_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_RecommendationRejectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_AcceptedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reject Recommendation"
+      }
+    },
     "/goals/{goal_id}/research": {
       "post": {
         "operationId": "research_goals__goal_id__research_post",
@@ -1235,6 +1456,84 @@
         "summary": "Simulate Day"
       }
     },
+    "/goals/{goal_id}/sources": {
+      "get": {
+        "operationId": "sources_goals__goal_id__sources_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_ResearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sources"
+      }
+    },
+    "/sessions/{session_id}/alternative-explanation": {
+      "post": {
+        "operationId": "alternative_explanation_sessions__session_id__alternative_explanation_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_AlternativeExplanationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Alternative Explanation"
+      }
+    },
     "/sessions/{session_id}/assess": {
       "post": {
         "operationId": "assess_sessions__session_id__assess_post",
@@ -1282,6 +1581,55 @@
           }
         },
         "summary": "Assess"
+      }
+    },
+    "/sessions/{session_id}/feedback": {
+      "post": {
+        "operationId": "session_feedback_sessions__session_id__feedback_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_SessionFeedbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_AcceptedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Session Feedback"
       }
     }
   }

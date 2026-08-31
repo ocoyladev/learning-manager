@@ -7,7 +7,7 @@ from datetime import date
 
 import uvicorn
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictBool, StrictInt, model_validator
 
 from learning_manager.contracts import (
     AssessmentItem,
@@ -68,6 +68,41 @@ class _ResearchRequest(BaseModel):
 
 class _ResearchResponse(BaseModel):
     sources: list[Source]
+
+
+class _GoalUpdateRequest(BaseModel):
+    daily_minutes: StrictInt | None = Field(default=None, ge=5, le=240)
+    paused: StrictBool | None = None
+
+    @model_validator(mode="after")
+    def require_update(self) -> _GoalUpdateRequest:
+        if self.daily_minutes is None and self.paused is None:
+            raise ValueError("At least one goal setting must be provided.")
+        return self
+
+
+class _GoalUpdateResponse(BaseModel):
+    goal: LearningGoal
+    paused: bool
+
+
+class _RecommendationRejectionRequest(BaseModel):
+    reason: str = Field(min_length=1)
+
+
+class _SessionFeedbackRequest(BaseModel):
+    appropriate: StrictBool
+    reason: str | None = Field(default=None, min_length=1)
+
+
+class _AcceptedResponse(BaseModel):
+    accepted: bool
+    message: str
+
+
+class _AlternativeExplanationResponse(BaseModel):
+    content: str
+    source_ids: list[str]
 
 
 class _AssessmentResponse(BaseModel):
@@ -178,6 +213,10 @@ def diagnostic_answers(goal_id: str, request: _AnswersRequest) -> _LearnerRespon
 @app.post("/goals/{goal_id}/research", response_model=_ResearchResponse)
 def research(goal_id: str, request: _ResearchRequest) -> _ResearchResponse:
     del goal_id, request
+    return _research_response()
+
+
+def _research_response() -> _ResearchResponse:
     return _ResearchResponse(
         sources=[
             Source(
@@ -189,6 +228,31 @@ def research(goal_id: str, request: _ResearchRequest) -> _ResearchResponse:
             )
         ]
     )
+
+
+@app.get("/goals/{goal_id}/sources", response_model=_ResearchResponse)
+def sources(goal_id: str) -> _ResearchResponse:
+    del goal_id
+    return _research_response()
+
+
+@app.patch("/goals/{goal_id}", response_model=_GoalUpdateResponse)
+def update_goal(goal_id: str, request: _GoalUpdateRequest) -> _GoalUpdateResponse:
+    goal = _goal(goal_id)
+    if request.daily_minutes is not None:
+        goal = goal.model_copy(update={"daily_minutes": request.daily_minutes})
+    return _GoalUpdateResponse(goal=goal, paused=request.paused or False)
+
+
+@app.post(
+    "/goals/{goal_id}/recommendations/reject",
+    response_model=_AcceptedResponse,
+)
+def reject_recommendation(
+    goal_id: str, request: _RecommendationRejectionRequest
+) -> _AcceptedResponse:
+    del goal_id, request
+    return _AcceptedResponse(accepted=True, message="Recommendation rejected.")
 
 
 @app.get("/goals/{goal_id}/next-session", response_model=NextSessionDecision)
@@ -228,6 +292,27 @@ def assess(session_id: str, request: _AnswersRequest) -> _AssessmentResponse:
             )
         ],
         learner_model=_learner_model("demo"),
+    )
+
+
+@app.post("/sessions/{session_id}/feedback", response_model=_AcceptedResponse)
+def session_feedback(session_id: str, request: _SessionFeedbackRequest) -> _AcceptedResponse:
+    del session_id, request
+    return _AcceptedResponse(accepted=True, message="Session feedback recorded.")
+
+
+@app.post(
+    "/sessions/{session_id}/alternative-explanation",
+    response_model=_AlternativeExplanationResponse,
+)
+def alternative_explanation(session_id: str) -> _AlternativeExplanationResponse:
+    del session_id
+    return _AlternativeExplanationResponse(
+        content=(
+            "A container packages an application and its dependencies while sharing "
+            "the host kernel."
+        ),
+        source_ids=["source-official"],
     )
 
 

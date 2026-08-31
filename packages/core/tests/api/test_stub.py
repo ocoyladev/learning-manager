@@ -154,6 +154,92 @@ def test_typed_validation_covers_answers_today_and_simulation_days() -> None:
     }
 
 
+def test_human_controls_return_deterministic_typed_responses() -> None:
+    sources = request("GET", "/goals/custom-id/sources")
+    assert sources.status_code == 200
+    assert sources.json() == {
+        "sources": [
+            {
+                "id": "source-official",
+                "url": "https://docs.docker.com/get-started/",
+                "title": "Docker Get Started",
+                "authority": "official",
+                "version": None,
+                "published_at": None,
+                "retrieved_at": "2026-08-30",
+                "content_path": None,
+            }
+        ]
+    }
+
+    updated = request("PATCH", "/goals/custom-id", json={"daily_minutes": 45, "paused": True})
+    assert updated.status_code == 200
+    assert updated.json() == {
+        "goal": {
+            "id": "custom-id",
+            "title": "Learn containers",
+            "purpose": "Build reliable services",
+            "deadline": "2026-09-20",
+            "daily_minutes": 45,
+            "preferred_formats": ["examples"],
+            "success_criteria": [],
+        },
+        "paused": True,
+    }
+
+    rejected = request(
+        "POST",
+        "/goals/custom-id/recommendations/reject",
+        json={"reason": "I need a shorter session."},
+    )
+    assert rejected.status_code == 200
+    assert rejected.json() == {
+        "accepted": True,
+        "message": "Recommendation rejected.",
+    }
+
+    feedback = request(
+        "POST",
+        "/sessions/session-demo/feedback",
+        json={"appropriate": False, "reason": "This was too advanced."},
+    )
+    assert feedback.status_code == 200
+    assert feedback.json() == {
+        "accepted": True,
+        "message": "Session feedback recorded.",
+    }
+
+    alternative = request("POST", "/sessions/session-demo/alternative-explanation")
+    assert alternative.status_code == 200
+    assert alternative.json() == {
+        "content": (
+            "A container packages an application and its dependencies while sharing "
+            "the host kernel."
+        ),
+        "source_ids": ["source-official"],
+    }
+
+
+def test_human_controls_validate_request_boundaries() -> None:
+    assert request("PATCH", "/goals/demo", json={}).status_code == 422
+    assert request("PATCH", "/goals/demo", json={"daily_minutes": 4}).status_code == 422
+    assert request("PATCH", "/goals/demo", json={"daily_minutes": 241}).status_code == 422
+    assert request("PATCH", "/goals/demo", json={"daily_minutes": 30.5}).status_code == 422
+    assert request("PATCH", "/goals/demo", json={"paused": "yes"}).status_code == 422
+    assert request("POST", "/goals/demo/recommendations/reject", json={}).status_code == 422
+    assert (
+        request("POST", "/goals/demo/recommendations/reject", json={"reason": ""}).status_code
+        == 422
+    )
+    assert request("POST", "/sessions/demo/feedback", json={}).status_code == 422
+    assert (
+        request(
+            "POST", "/sessions/demo/feedback", json={"appropriate": True, "reason": ""}
+        ).status_code
+        == 422
+    )
+
+
 def test_openapi_matches_generated_app_schema_and_is_stable() -> None:
     schema_path = Path(__file__).parents[4] / "openapi.json"
     schema = json.loads(schema_path.read_text())
@@ -174,6 +260,11 @@ def test_openapi_matches_generated_app_schema_and_is_stable() -> None:
         ("POST", "/sessions/session-demo/assess"),
         ("GET", "/goals/demo/dashboard"),
         ("POST", "/goals/demo/simulate-day"),
+        ("GET", "/goals/demo/sources"),
+        ("PATCH", "/goals/demo"),
+        ("POST", "/goals/demo/recommendations/reject"),
+        ("POST", "/sessions/session-demo/feedback"),
+        ("POST", "/sessions/session-demo/alternative-explanation"),
     ],
 )
 def test_required_route_is_registered(method: str, path: str) -> None:
@@ -195,6 +286,12 @@ def test_required_route_is_registered(method: str, path: str) -> None:
             if "/research" in path
             else {"days": 1}
             if "simulate-day" in path
+            else {"daily_minutes": 5}
+            if method == "PATCH"
+            else {"reason": "reason"}
+            if "recommendations/reject" in path
+            else {"appropriate": True}
+            if "/feedback" in path
             else None
         ),
     )
