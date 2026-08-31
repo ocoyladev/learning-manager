@@ -239,6 +239,73 @@ def test_session_roundtrip_preserves_nested_blocks_and_metadata(session_factory)
         assert session.get(SessionRecord, session_id).goal_id == "session-goal"
 
 
+def test_empty_session_decision_roundtrips_without_a_goal(session_factory) -> None:
+    repo = SessionRepository(session_factory)
+    decision = NextSessionDecision(
+        session_date=date(2026, 9, 5),
+        blocks=[],
+        total_minutes=0,
+        rationale="No study block is due today.",
+        deadline_status=DeadlineStatus.ON_TRACK,
+    )
+
+    session_id = repo.save(decision)
+
+    assert repo.get(session_id) == decision.model_copy(update={"id": session_id})
+    with session_factory() as session:
+        assert session.get(SessionRecord, session_id).goal_id is None
+
+
+def test_unknown_concept_session_decision_roundtrips_without_a_goal(session_factory) -> None:
+    repo = SessionRepository(session_factory)
+    decision = NextSessionDecision(
+        session_date=date(2026, 9, 5),
+        blocks=[
+            SessionBlock(
+                kind=BlockKind.PRACTICE,
+                concept_id="unknown-concept",
+                minutes=10,
+                objective="Practice a concept that has not been persisted.",
+            )
+        ],
+        total_minutes=10,
+        rationale="The decision remains valid independently of persistence metadata.",
+        deadline_status=DeadlineStatus.ON_TRACK,
+    )
+
+    session_id = repo.save(decision)
+
+    assert repo.get(session_id) == decision.model_copy(update={"id": session_id})
+    with session_factory() as session:
+        assert session.get(SessionRecord, session_id).goal_id is None
+
+
+def test_ambiguous_session_decision_roundtrips_without_a_goal(session_factory) -> None:
+    repo = SessionRepository(session_factory)
+    _save_goal(session_factory, "goal-a", [Concept(id="shared-concept", name="Shared")])
+    _save_goal(session_factory, "goal-b", [Concept(id="shared-concept", name="Shared")])
+    decision = NextSessionDecision(
+        session_date=date(2026, 9, 5),
+        blocks=[
+            SessionBlock(
+                kind=BlockKind.PRACTICE,
+                concept_id="shared-concept",
+                minutes=10,
+                objective="Practice a concept shared by multiple goals.",
+            )
+        ],
+        total_minutes=10,
+        rationale="The persisted session must not choose between matching goals.",
+        deadline_status=DeadlineStatus.ON_TRACK,
+    )
+
+    session_id = repo.save(decision)
+
+    assert repo.get(session_id) == decision.model_copy(update={"id": session_id})
+    with session_factory() as session:
+        assert session.get(SessionRecord, session_id).goal_id is None
+
+
 def test_source_upsert_preserves_metadata_and_by_ids_order(session_factory) -> None:
     repo = SourceRepository(session_factory)
     sources = [

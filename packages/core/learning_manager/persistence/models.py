@@ -96,8 +96,8 @@ class SessionRecord(Base):
     __tablename__ = "sessions"
 
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
-    goal_id: Mapped[str] = mapped_column(
-        String(255), ForeignKey("learning_goals.id", ondelete="CASCADE"), nullable=False
+    goal_id: Mapped[str | None] = mapped_column(
+        String(255), ForeignKey("learning_goals.id", ondelete="CASCADE"), nullable=True
     )
     session_date: Mapped[date] = mapped_column(Date, nullable=False)
     planned_minutes: Mapped[int] = mapped_column(Integer, nullable=False)

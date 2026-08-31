@@ -169,12 +169,10 @@ class LearnerModelRepository(_Repository):
 
 class SessionRepository(_Repository):
     @staticmethod
-    def _resolve_goal_id(session: Session, decision: NextSessionDecision) -> str:
+    def _resolve_goal_id(session: Session, decision: NextSessionDecision) -> str | None:
         concept_ids = {block.concept_id for block in decision.blocks}
         if not concept_ids:
-            raise ValueError(
-                "cannot save a session decision without a concept to identify its goal"
-            )
+            return None
 
         rows = session.execute(
             select(ConceptRecord.goal_id, ConceptRecord.id).where(ConceptRecord.id.in_(concept_ids))
@@ -189,7 +187,7 @@ class SessionRepository(_Repository):
         }
         candidate_goal_ids = set.intersection(*goal_ids_by_concept.values())
         if len(candidate_goal_ids) != 1:
-            raise ValueError("session decision does not identify a unique existing goal")
+            return None
         return candidate_goal_ids.pop()
 
     def save(self, decision: NextSessionDecision) -> str:

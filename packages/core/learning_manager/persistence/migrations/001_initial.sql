@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS assessment_attempts (
 
 CREATE TABLE IF NOT EXISTS sessions (
     id VARCHAR(255) PRIMARY KEY,
-    goal_id VARCHAR(255) NOT NULL REFERENCES learning_goals(id) ON DELETE CASCADE,
+    goal_id VARCHAR(255) REFERENCES learning_goals(id) ON DELETE CASCADE,
     session_date DATE NOT NULL,
     planned_minutes INTEGER NOT NULL,
     blocks JSONB NOT NULL DEFAULT '[]'::jsonb,
