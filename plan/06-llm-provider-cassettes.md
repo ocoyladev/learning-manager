@@ -20,7 +20,7 @@ Test `tests/providers/test_meter.py`
 expone `last_user_prompt`.
 `CostMeter.record(response: LLMResponse)`, `.totals() -> CostSummary`
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 # packages/core/tests/providers/test_meter.py
@@ -55,13 +55,13 @@ def test_unknown_model_does_not_crash_and_reports_zero_cost() -> None:
     assert m.totals().cost_usd == 0.0
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar.** `PRICING: dict[str, tuple[float, float]]` con precio por millón
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar.** `PRICING: dict[str, tuple[float, float]]` con precio por millón
       de tokens de entrada y salida. **Verifica los precios vigentes de Gemini antes de
       rellenarlos** y anota la fecha de consulta en un comentario; si no se conocen, deja el
       modelo fuera de `PRICING` (coste 0) y documéntalo en el README en vez de inventar cifras.
-- [ ] **Paso 4: ejecutar** → 3 passed
-- [ ] **Paso 5: commit** → `git commit -m "feat(providers): add fake LLM and cost meter"`
+- [x] **Paso 4: ejecutar** → 3 passed
+- [x] **Paso 5: commit** → `git commit -m "feat(providers): add fake LLM and cost meter"`
 
 ---
 
@@ -75,7 +75,7 @@ def test_unknown_model_does_not_crash_and_reports_zero_cost() -> None:
 Fichero: `fixtures/cassettes/<primeros 16 del hash>.json`, con la petición completa dentro para
 poder auditarlo.
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 def test_live_mode_records_and_replay_mode_reads(tmp_path) -> None:
@@ -112,12 +112,12 @@ def test_cassette_file_is_human_readable_and_contains_the_request(tmp_path) -> N
     assert "response" in data and "recorded_at" in data
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar.** El mensaje de `CassetteMissError` debe decir literalmente qué
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar.** El mensaje de `CassetteMissError` debe decir literalmente qué
       ejecutar: `"Cassette no encontrado para <clave>. Ejecuta 'make record' con GEMINI_API_KEY,
       o usa LLM_MODE=live."`
-- [ ] **Paso 4: ejecutar** → 4 passed
-- [ ] **Paso 5: commit** → `git commit -m "feat(providers): add cassette record/replay LLM provider"`
+- [x] **Paso 4: ejecutar** → 4 passed
+- [x] **Paso 5: commit** → `git commit -m "feat(providers): add cassette record/replay LLM provider"`
 
 ---
 
@@ -130,7 +130,7 @@ Test `tests/providers/test_gemini.py` (con `respx`, sin red real)
 `GeminiProvider(api_key, model, timeout=60)` — implementa `LLMProvider`
 `build_llm(settings, meter, trajectory) -> LLMProvider` — decide según `LLM_MODE`
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 def test_json_schema_is_sent_as_structured_output(respx_mock) -> None:
@@ -171,19 +171,19 @@ def test_live_mode_without_api_key_fails_with_a_clear_message(monkeypatch) -> No
         build_llm(...)
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar** con `google-genai`, `temperature=0`, salida JSON estructurada,
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar** con `google-genai`, `temperature=0`, salida JSON estructurada,
       3 reintentos con backoff exponencial en 429/5xx, y timeout de 60 s.
       **Antes de usar `live`, verifica el ID de modelo vigente y anótalo en `.env.example`.**
-- [ ] **Paso 4: ejecutar** → 5 passed
-- [ ] **Paso 5: commit** → `git commit -m "feat(providers): add Gemini LLM provider with retries"`
+- [x] **Paso 4: ejecutar** → 5 passed
+- [x] **Paso 5: commit** → `git commit -m "feat(providers): add Gemini LLM provider with retries"`
 
 ---
 
 ## ✅ Criterio de salida
 
-- [ ] La suite completa corre con `LLM_MODE=fake` sin red ni keys
-- [ ] Un cassette grabado en `live` se reproduce byte a byte en `replay`
-- [ ] `CassetteMissError` dice cómo arreglarlo
-- [ ] El medidor reporta coste, tokens y latencia p50/p95
-- [ ] **Avisa a la Pista A**: la F4 ya puede arrancar
+- [x] La suite completa corre con `LLM_MODE=fake` sin red ni keys
+- [x] Un cassette grabado en `live` se reproduce byte a byte en `replay`
+- [x] `CassetteMissError` dice cómo arreglarlo
+- [x] El medidor reporta coste, tokens y latencia p50/p95
+- [x] **Avisa a la Pista A**: la F4 ya puede arrancar
