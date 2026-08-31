@@ -35,6 +35,10 @@ export class ApiError extends Error {
   }
 }
 
+export function isNotFoundError(error: unknown): error is ApiError {
+  return error instanceof ApiError && error.status === 404;
+}
+
 function errorMessage(payload: unknown, fallback: string): string {
   if (typeof payload === "object" && payload !== null && "detail" in payload) {
     const detail = payload.detail;
@@ -51,8 +55,8 @@ function errorMessage(payload: unknown, fallback: string): string {
 
 const API_BASE =
   typeof window === "undefined"
-    ? (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000")
-    : "/backend";
+    ? (process.env.API_ORIGIN ?? "http://localhost:8000")
+    : "/api";
 
 async function call<Operation extends keyof operations>(
   operation: Operation,

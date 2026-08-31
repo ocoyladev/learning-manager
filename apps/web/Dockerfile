@@ -5,13 +5,14 @@ RUN npm ci
 
 FROM node:24-alpine AS builder
 WORKDIR /app
+ENV API_ORIGIN=http://api:8000
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
 FROM node:24-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000
+ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000 API_ORIGIN=http://api:8000
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
