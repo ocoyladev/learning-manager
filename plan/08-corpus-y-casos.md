@@ -26,7 +26,7 @@
 | `k8s-services-networking` | kubernetes.io | Un post que confunde ClusterIP con NodePort |
 | `nextjs-app-router` | nextjs.org | **Caso difícil:** `getServerSideProps` presentado como actual |
 
-- [ ] **Paso 1: implementar `build_corpus`** — recibe una lista de URLs por tema, descarga,
+- [x] **Paso 1: implementar `build_corpus`** — recibe una lista de URLs por tema, descarga,
       convierte a markdown, extrae fecha y versión con las funciones de la F7.1, escribe
       `manifest.json` con `retrieved_at` y guarda el `.md`.
 - [ ] **Paso 2: ejecutar sobre 5–8 URLs por tema** (≈ 40 documentos)
@@ -102,7 +102,7 @@ def test_every_case_has_a_matching_key(path: Path) -> None:
 ```
 
 - [ ] **Paso 2: ejecutar y confirmar el fallo** (0 casos existen aún)
-- [ ] **Paso 3: escribir los 11 casos.** Cada uno debe aislar el comportamiento que dice su
+- [x] **Paso 3: escribir los 11 casos.** Cada uno debe aislar el comportamiento que dice su
       fila de la tabla. Ejemplos concretos de los dos más delicados:
 
 `eval/cases/nsdq/k8s-review-storm.json` — 4 conceptos con `next_review` = `today` y solo
@@ -168,7 +168,7 @@ def test_every_referenced_source_exists_in_the_corpus(path: Path) -> None:
                 assert claim[field] in known, f"{claim['id']}.{field} → {claim[field]} no existe"
 ```
 
-- [ ] **Paso 3: commit** → `git commit -m "data: freeze source verification cases"`
+- [x] **Paso 3: commit** → `git commit -m "data: freeze source verification cases"`
 
 ---
 
