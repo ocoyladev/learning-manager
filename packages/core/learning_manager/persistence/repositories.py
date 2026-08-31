@@ -107,6 +107,11 @@ class GoalRepository(_Repository):
 class LearnerModelRepository(_Repository):
     def save(self, model: LearnerModel) -> None:
         with self._session_factory() as session:
+            goal = session.get(LearningGoalRecord, model.goal_id)
+            if goal is None:
+                raise ValueError(f"cannot save learner model for unknown goal: {model.goal_id}")
+            goal.updated_at = model.updated_at
+
             existing = session.scalars(
                 select(LearnerConceptStateRecord).where(
                     LearnerConceptStateRecord.goal_id == model.goal_id
@@ -133,11 +138,13 @@ class LearnerModelRepository(_Repository):
                 row.next_review = state.next_review
                 row.misconceptions = list(state.misconceptions)
                 row.evidence = list(state.evidence)
-                row.updated_at = model.updated_at
             self._commit(session)
 
     def get(self, goal_id: str) -> LearnerModel:
         with self._session_factory() as session:
+            goal = session.get(LearningGoalRecord, goal_id)
+            if goal is None:
+                raise KeyError(f"unknown learning goal: {goal_id}")
             rows = session.scalars(
                 select(LearnerConceptStateRecord)
                 .where(LearnerConceptStateRecord.goal_id == goal_id)
@@ -157,19 +164,44 @@ class LearnerModelRepository(_Repository):
                 )
                 for row in rows
             }
-            updated_at = rows[0].updated_at if rows else None
-            return LearnerModel(goal_id=goal_id, concepts=concepts, updated_at=updated_at)
+            return LearnerModel(goal_id=goal_id, concepts=concepts, updated_at=goal.updated_at)
 
 
 class SessionRepository(_Repository):
+    @staticmethod
+    def _resolve_goal_id(session: Session, decision: NextSessionDecision) -> str:
+        concept_ids = {block.concept_id for block in decision.blocks}
+        if not concept_ids:
+            raise ValueError(
+                "cannot save a session decision without a concept to identify its goal"
+            )
+
+        rows = session.execute(
+            select(ConceptRecord.goal_id, ConceptRecord.id).where(ConceptRecord.id.in_(concept_ids))
+        ).all()
+        goal_ids_by_concept: dict[str, set[str]] = {
+            concept_id: {
+                cast(str, goal_id)
+                for goal_id, row_concept_id in rows
+                if cast(str, row_concept_id) == concept_id
+            }
+            for concept_id in concept_ids
+        }
+        candidate_goal_ids = set.intersection(*goal_ids_by_concept.values())
+        if len(candidate_goal_ids) != 1:
+            raise ValueError("session decision does not identify a unique existing goal")
+        return candidate_goal_ids.pop()
+
     def save(self, decision: NextSessionDecision) -> str:
         session_id = decision.id or uuid4().hex
         blocks = [block.model_dump(mode="json") for block in decision.blocks]
         with self._session_factory() as session:
+            goal_id = self._resolve_goal_id(session, decision)
             row = session.get(SessionRecord, session_id)
             if row is None:
                 row = SessionRecord(id=session_id)
                 session.add(row)
+            row.goal_id = goal_id
             row.session_date = decision.session_date
             row.planned_minutes = decision.total_minutes
             row.blocks = cast(list[object], blocks)

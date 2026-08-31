@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-from sqlalchemy import JSON, Date, DateTime, ForeignKey, Integer, String
+from sqlalchemy import JSON, Date, DateTime, ForeignKey, ForeignKeyConstraint, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -33,6 +33,7 @@ class LearningGoalRecord(Base):
     daily_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
     preferred_formats: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
     success_criteria: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class ConceptRecord(Base):
@@ -51,6 +52,13 @@ class ConceptRecord(Base):
 
 class LearnerConceptStateRecord(Base):
     __tablename__ = "learner_concept_states"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["goal_id", "concept_id"],
+            ["concepts.goal_id", "concepts.id"],
+            ondelete="CASCADE",
+        ),
+    )
 
     goal_id: Mapped[str] = mapped_column(String(255), primary_key=True)
     concept_id: Mapped[str] = mapped_column(String(255), primary_key=True)
@@ -62,11 +70,17 @@ class LearnerConceptStateRecord(Base):
     next_review: Mapped[date | None] = mapped_column(Date, nullable=True)
     misconceptions: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
     evidence: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
-    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class AssessmentAttemptRecord(Base):
     __tablename__ = "assessment_attempts"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["goal_id", "concept_id"],
+            ["concepts.goal_id", "concepts.id"],
+            ondelete="CASCADE",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
     goal_id: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -82,7 +96,9 @@ class SessionRecord(Base):
     __tablename__ = "sessions"
 
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
-    goal_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    goal_id: Mapped[str] = mapped_column(
+        String(255), ForeignKey("learning_goals.id", ondelete="CASCADE"), nullable=False
+    )
     session_date: Mapped[date] = mapped_column(Date, nullable=False)
     planned_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
     blocks: Mapped[list[object]] = mapped_column(JSON, nullable=False, default=list)

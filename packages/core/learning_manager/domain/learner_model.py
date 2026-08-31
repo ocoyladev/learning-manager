@@ -42,6 +42,12 @@ def apply_assessment(
     today: date,
 ) -> LearnerConceptState:
     """Return a new state after incorporating one assessment result."""
+    if state.concept_id != result.concept_id:
+        raise ValueError(
+            "assessment concept ID does not match learner state: "
+            f"{state.concept_id!r} != {result.concept_id!r}"
+        )
+
     mastery = round(state.mastery * (1 - LEARNING_RATE) + result.score * LEARNING_RATE, 4)
     confidence = round(min(1.0, state.confidence + CONFIDENCE_GAIN), 4)
 

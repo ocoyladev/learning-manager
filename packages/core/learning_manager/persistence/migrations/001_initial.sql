@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS learning_goals (
     deadline DATE NOT NULL,
     daily_minutes INTEGER NOT NULL CHECK (daily_minutes BETWEEN 5 AND 240),
     preferred_formats JSONB NOT NULL DEFAULT '[]'::jsonb,
-    success_criteria JSONB NOT NULL DEFAULT '[]'::jsonb
+    success_criteria JSONB NOT NULL DEFAULT '[]'::jsonb,
+    updated_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS concepts (
@@ -38,8 +39,8 @@ CREATE TABLE IF NOT EXISTS learner_concept_states (
     next_review DATE,
     misconceptions JSONB NOT NULL DEFAULT '[]'::jsonb,
     evidence JSONB NOT NULL DEFAULT '[]'::jsonb,
-    updated_at TIMESTAMPTZ,
-    PRIMARY KEY (goal_id, concept_id)
+    PRIMARY KEY (goal_id, concept_id),
+    FOREIGN KEY (goal_id, concept_id) REFERENCES concepts(goal_id, id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS assessment_attempts (
@@ -50,12 +51,13 @@ CREATE TABLE IF NOT EXISTS assessment_attempts (
     answers JSONB NOT NULL DEFAULT '[]'::jsonb,
     score DOUBLE PRECISION NOT NULL CHECK (score BETWEEN 0 AND 1),
     evidence JSONB NOT NULL DEFAULT '[]'::jsonb,
-    created_at TIMESTAMPTZ NOT NULL
+    created_at TIMESTAMPTZ NOT NULL,
+    FOREIGN KEY (goal_id, concept_id) REFERENCES concepts(goal_id, id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
     id VARCHAR(255) PRIMARY KEY,
-    goal_id VARCHAR(255),
+    goal_id VARCHAR(255) NOT NULL REFERENCES learning_goals(id) ON DELETE CASCADE,
     session_date DATE NOT NULL,
     planned_minutes INTEGER NOT NULL,
     blocks JSONB NOT NULL DEFAULT '[]'::jsonb,

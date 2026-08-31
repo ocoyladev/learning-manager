@@ -1,5 +1,7 @@
 from datetime import date
 
+import pytest
+
 from learning_manager.contracts import (
     AssessmentResult,
     ConceptState,
@@ -188,3 +190,16 @@ def test_apply_assessment_is_pure_and_does_not_mutate_inputs() -> None:
     assert before.evidence == ["old evidence"]
     assert result.misconceptions == ["new misconception"]
     assert result.evidence == ["new evidence"]
+
+
+def test_apply_assessment_rejects_a_result_for_another_concept() -> None:
+    state = LearnerConceptState(
+        concept_id="services",
+        mastery=0.5,
+        confidence=0.5,
+        state=ConceptState.DEVELOPING,
+    )
+    result = AssessmentResult(concept_id="ingress", score=0.9, correct=9, total=10)
+
+    with pytest.raises(ValueError, match="services.*ingress"):
+        apply_assessment(state, result, TODAY)
