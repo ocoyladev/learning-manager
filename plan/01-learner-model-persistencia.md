@@ -22,7 +22,7 @@
 `derive_state(mastery: float, confidence: float, next_review: date | None, today: date) -> ConceptState`
 `apply_assessment(state: LearnerConceptState, result: AssessmentResult, today: date) -> LearnerConceptState`
 
-- [ ] **Paso 1: escribir el test que falla**
+- [x] **Paso 1: escribir el test que falla**
 
 ```python
 # packages/core/tests/domain/test_learner_model.py
@@ -91,12 +91,12 @@ def test_apply_assessment_is_pure() -> None:
     assert before.mastery == 0.5   # el original no se muta
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 2: ejecutar y confirmar el fallo**
 
 Run: `cd packages/core && pytest tests/domain/test_learner_model.py -v`
 Esperado: `ModuleNotFoundError: No module named 'learning_manager.domain.learner_model'`
 
-- [ ] **Paso 3: implementar el mínimo**
+- [x] **Paso 3: implementar el mínimo**
 
 ```python
 # packages/core/learning_manager/domain/learner_model.py
@@ -168,8 +168,8 @@ def apply_assessment(
     )
 ```
 
-- [ ] **Paso 4: ejecutar** → 8 passed
-- [ ] **Paso 5: commit** → `git commit -m "feat(domain): add pure learner model state transitions"`
+- [x] **Paso 4: ejecutar** → 8 passed
+- [x] **Paso 5: commit** → `git commit -m "feat(domain): add pure learner model state transitions"`
 
 ---
 
@@ -184,7 +184,7 @@ def apply_assessment(
 `.blocked_by(concept_id, model) -> list[str]`, `.topological_order() -> list[str]`,
 `.detect_cycle() -> list[str] | None`
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 # packages/core/tests/domain/test_concept_graph.py
@@ -247,12 +247,12 @@ def test_unknown_prerequisite_is_rejected() -> None:
         ConceptGraph(bad)
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar** `ConceptGraph` con validación en el constructor (ciclos y
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar** `ConceptGraph` con validación en el constructor (ciclos y
       prerrequisitos inexistentes), `unlocked` usando `PREREQ_THRESHOLD` de `contracts`,
       y orden topológico por Kahn.
-- [ ] **Paso 4: ejecutar** → 7 passed
-- [ ] **Paso 5: commit** → `git commit -m "feat(domain): add concept graph with prerequisite gating"`
+- [x] **Paso 4: ejecutar** → 7 passed
+- [x] **Paso 5: commit** → `git commit -m "feat(domain): add concept graph with prerequisite gating"`
 
 ---
 
@@ -273,7 +273,7 @@ def test_unknown_prerequisite_is_rejected() -> None:
 Tablas (del §37 de la especificación): `users`, `learning_goals`, `concepts`,
 `learner_concept_states`, `assessment_attempts`, `sessions`, `sources`.
 
-- [ ] **Paso 1: test que falla** — usar Postgres real vía compose, no SQLite; el test se salta
+- [x] **Paso 1: test que falla** — usar Postgres real vía compose, no SQLite; el test se salta
       con `pytest.mark.skipif` si `DATABASE_URL` no apunta a un Postgres accesible.
 
 ```python
@@ -312,20 +312,20 @@ def test_learner_model_upsert_is_idempotent(session_factory) -> None:
     assert len(repo.get("g1").concepts) == 1
 ```
 
-- [ ] **Paso 2: ejecutar** → falla
-- [ ] **Paso 3: implementar** modelos SQLAlchemy 2 (`Mapped[...]`), migración SQL inicial,
+- [x] **Paso 2: ejecutar** → falla
+- [x] **Paso 3: implementar** modelos SQLAlchemy 2 (`Mapped[...]`), migración SQL inicial,
       repositorios que traducen fila ⇄ modelo de `contracts` (nunca exponer entidades ORM
       fuera de `persistence/`), y un `conftest.py` que provee `session_factory` con rollback
       por test.
-- [ ] **Paso 4: ejecutar con `docker compose up -d db`** → 2 passed
-- [ ] **Paso 5: commit** → `git commit -m "feat(persistence): add Postgres repositories for goal and learner model"`
+- [x] **Paso 4: ejecutar con `docker compose up -d db`** → 2 passed
+- [x] **Paso 5: commit** → `git commit -m "feat(persistence): add Postgres repositories for goal and learner model"`
 
 ---
 
 ## ✅ Criterio de salida
 
-- [ ] `apply_assessment` y `derive_state` cubiertos al 100 % por tests
-- [ ] `ConceptGraph` rechaza ciclos y prerrequisitos inexistentes en construcción
-- [ ] Roundtrip de persistencia verde contra Postgres real
-- [ ] Ninguna función de esta fase llama a `datetime.now()`
-- [ ] `make check` en verde
+- [x] `apply_assessment` y `derive_state` cubiertos al 100 % por tests
+- [x] `ConceptGraph` rechaza ciclos y prerrequisitos inexistentes en construcción
+- [x] Roundtrip de persistencia verde contra Postgres real
+- [x] Ninguna función de esta fase llama a `datetime.now()`
+- [x] `make check` en verde
