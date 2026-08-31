@@ -1,0 +1,42 @@
+[
+  {
+    "id": "docker-fundamentals-official-current",
+    "url": "https://docs.docker.com/reference/official-current",
+    "title": "docker-fundamentals official-current",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-fundamentals/official-current.md"
+  },
+  {
+    "id": "docker-fundamentals-official-v24",
+    "url": "https://docs.docker.com/reference/official-v24",
+    "title": "docker-fundamentals official-v24",
+    "authority": "official",
+    "version": "1.0",
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-fundamentals/official-v24.md"
+  },
+  {
+    "id": "docker-fundamentals-community-guide",
+    "url": "https://dev.to/reference/community-guide",
+    "title": "docker-fundamentals community-guide",
+    "authority": "blog",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-fundamentals/community-guide.md"
+  },
+  {
+    "id": "docker-fundamentals-reference",
+    "url": "https://docs.docker.com/reference/reference",
+    "title": "docker-fundamentals reference",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-fundamentals/reference.md"
+  }
+]

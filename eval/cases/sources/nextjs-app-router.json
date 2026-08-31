@@ -1,0 +1,23 @@
+{
+  "topic": "nextjs-app-router",
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Current official guidance is authoritative.",
+      "verdict": "current",
+      "supported_by": "nextjs-app-router-official-current"
+    },
+    {
+      "id": "c2",
+      "text": "Legacy guidance remains current.",
+      "verdict": "outdated",
+      "superseded_by": "nextjs-app-router-official-current",
+      "correct": "Use the current official guidance."
+    },
+    {
+      "id": "c3",
+      "text": "An unsupported detail is guaranteed.",
+      "verdict": "unsupported"
+    }
+  ]
+}

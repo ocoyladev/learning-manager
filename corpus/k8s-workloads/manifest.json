@@ -1,0 +1,42 @@
+[
+  {
+    "id": "k8s-workloads-official-current",
+    "url": "https://kubernetes.io/reference/official-current",
+    "title": "k8s-workloads official-current",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-workloads/official-current.md"
+  },
+  {
+    "id": "k8s-workloads-official-v1-28",
+    "url": "https://kubernetes.io/reference/official-v1-28",
+    "title": "k8s-workloads official-v1-28",
+    "authority": "official",
+    "version": "1.0",
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-workloads/official-v1-28.md"
+  },
+  {
+    "id": "k8s-workloads-community-guide",
+    "url": "https://dev.to/reference/community-guide",
+    "title": "k8s-workloads community-guide",
+    "authority": "blog",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-workloads/community-guide.md"
+  },
+  {
+    "id": "k8s-workloads-reference",
+    "url": "https://kubernetes.io/reference/reference",
+    "title": "k8s-workloads reference",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-workloads/reference.md"
+  }
+]

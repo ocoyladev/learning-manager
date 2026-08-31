@@ -1,0 +1,18 @@
+{
+  "case_id": "docker-availability-drop",
+  "must_target": [
+    "storage"
+  ],
+  "must_not_teach_new": [],
+  "forbidden_before": {
+    "advanced": [
+      "networking",
+      "storage"
+    ]
+  },
+  "must_include_review": [],
+  "time_budget": 25,
+  "time_tolerance": 0.1,
+  "expected_deadline_status": "on_track",
+  "notes": "The key prioritizes the weakest available concept, respects prerequisites, and stays within the explicit daily budget."
+}

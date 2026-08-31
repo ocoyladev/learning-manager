@@ -1,0 +1,71 @@
+{
+  "case_id": "docker-availability-drop",
+  "difficulty": "normal",
+  "goal": {
+    "id": "docker-availability-drop",
+    "title": "Learn docker-availability-drop",
+    "purpose": "demonstrable technical proficiency",
+    "deadline": "2026-09-20",
+    "daily_minutes": 25,
+    "preferred_formats": [
+      "examples",
+      "practice"
+    ]
+  },
+  "today": "2026-09-05",
+  "concept_graph": [
+    {
+      "id": "root",
+      "name": "Foundations",
+      "prerequisites": [],
+      "estimated_minutes": 15
+    },
+    {
+      "id": "networking",
+      "name": "Networking",
+      "prerequisites": [
+        "root"
+      ],
+      "estimated_minutes": 20
+    },
+    {
+      "id": "storage",
+      "name": "Storage",
+      "prerequisites": [
+        "root"
+      ],
+      "estimated_minutes": 20
+    },
+    {
+      "id": "advanced",
+      "name": "Advanced practice",
+      "prerequisites": [
+        "networking",
+        "storage"
+      ],
+      "estimated_minutes": 25
+    }
+  ],
+  "learner_model": {
+    "root": {
+      "mastery": 0.0,
+      "confidence": 0.0,
+      "state": "unseen"
+    },
+    "networking": {
+      "mastery": 0.0,
+      "confidence": 0.0,
+      "state": "unseen"
+    },
+    "storage": {
+      "mastery": 0.0,
+      "confidence": 0.0,
+      "state": "unseen"
+    },
+    "advanced": {
+      "mastery": 0.0,
+      "confidence": 0.0,
+      "state": "unseen"
+    }
+  }
+}

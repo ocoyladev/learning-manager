@@ -1,0 +1,23 @@
+{
+  "topic": "docker-volumes-networking",
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Current official guidance is authoritative.",
+      "verdict": "current",
+      "supported_by": "docker-volumes-networking-official-current"
+    },
+    {
+      "id": "c2",
+      "text": "Legacy guidance remains current.",
+      "verdict": "outdated",
+      "superseded_by": "docker-volumes-networking-official-current",
+      "correct": "Use the current official guidance."
+    },
+    {
+      "id": "c3",
+      "text": "An unsupported detail is guaranteed.",
+      "verdict": "unsupported"
+    }
+  ]
+}

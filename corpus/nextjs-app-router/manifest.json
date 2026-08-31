@@ -1,0 +1,42 @@
+[
+  {
+    "id": "nextjs-app-router-official-current",
+    "url": "https://nextjs.org/reference/official-current",
+    "title": "nextjs-app-router official-current",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "nextjs-app-router/official-current.md"
+  },
+  {
+    "id": "nextjs-app-router-official-migration",
+    "url": "https://nextjs.org/reference/official-migration",
+    "title": "nextjs-app-router official-migration",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "nextjs-app-router/official-migration.md"
+  },
+  {
+    "id": "nextjs-app-router-legacy-gssp",
+    "url": "https://nextjs.org/reference/legacy-gssp",
+    "title": "nextjs-app-router legacy-gssp",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "nextjs-app-router/legacy-gssp.md"
+  },
+  {
+    "id": "nextjs-app-router-community-guide",
+    "url": "https://dev.to/reference/community-guide",
+    "title": "nextjs-app-router community-guide",
+    "authority": "blog",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "nextjs-app-router/community-guide.md"
+  }
+]

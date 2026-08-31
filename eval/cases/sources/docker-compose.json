@@ -1,0 +1,23 @@
+{
+  "topic": "docker-compose",
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Current official guidance is authoritative.",
+      "verdict": "current",
+      "supported_by": "docker-compose-official-current"
+    },
+    {
+      "id": "c2",
+      "text": "Legacy guidance remains current.",
+      "verdict": "outdated",
+      "superseded_by": "docker-compose-official-current",
+      "correct": "Use the current official guidance."
+    },
+    {
+      "id": "c3",
+      "text": "An unsupported detail is guaranteed.",
+      "verdict": "unsupported"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "docker-compose-official-current",
+    "url": "https://docs.docker.com/reference/official-current",
+    "title": "docker-compose official-current",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-compose/official-current.md"
+  },
+  {
+    "id": "docker-compose-official-migration",
+    "url": "https://docs.docker.com/reference/official-migration",
+    "title": "docker-compose official-migration",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-compose/official-migration.md"
+  },
+  {
+    "id": "docker-compose-compose-v1",
+    "url": "https://docs.docker.com/reference/compose-v1",
+    "title": "docker-compose compose-v1",
+    "authority": "official",
+    "version": "1.0",
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-compose/compose-v1.md"
+  },
+  {
+    "id": "docker-compose-community-guide",
+    "url": "https://dev.to/reference/community-guide",
+    "title": "docker-compose community-guide",
+    "authority": "blog",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "docker-compose/community-guide.md"
+  }
+]

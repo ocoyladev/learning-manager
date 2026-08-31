@@ -1,0 +1,42 @@
+[
+  {
+    "id": "k8s-services-networking-official-current",
+    "url": "https://kubernetes.io/reference/official-current",
+    "title": "k8s-services-networking official-current",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-services-networking/official-current.md"
+  },
+  {
+    "id": "k8s-services-networking-official-networking",
+    "url": "https://kubernetes.io/reference/official-networking",
+    "title": "k8s-services-networking official-networking",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-services-networking/official-networking.md"
+  },
+  {
+    "id": "k8s-services-networking-legacy-nodeport",
+    "url": "https://kubernetes.io/reference/legacy-nodeport",
+    "title": "k8s-services-networking legacy-nodeport",
+    "authority": "official",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-services-networking/legacy-nodeport.md"
+  },
+  {
+    "id": "k8s-services-networking-community-guide",
+    "url": "https://dev.to/reference/community-guide",
+    "title": "k8s-services-networking community-guide",
+    "authority": "blog",
+    "version": null,
+    "published_at": null,
+    "retrieved_at": "2026-08-31",
+    "content_path": "k8s-services-networking/community-guide.md"
+  }
+]
