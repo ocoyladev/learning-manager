@@ -45,6 +45,34 @@ describe("TodaySession", () => {
     expect(screen.getByText(/next review 2026-09-02 → 2026-09-09/)).toBeInTheDocument();
   });
 
+  it("submits one complete ordered assessment for multiple retrieval blocks", async () => {
+    const learnerModel = { goal_id: "goal-1", concepts: {} };
+    const goal = { id: "goal-1", title: "Containers", purpose: "Build reliable services", deadline: "2026-09-20", daily_minutes: 30, preferred_formats: ["examples"] };
+    const concepts = [{ id: "containers", name: "Containers", importance: 1, estimated_minutes: 15, prerequisites: [] }];
+    apiMocks.getGoal.mockResolvedValueOnce({ goal, concepts, learner_model: learnerModel });
+    apiMocks.getNextSession.mockResolvedValueOnce({ id: "session-1", blocks: [
+      { concept_id: "runtime", kind: "retrieval", minutes: 10, objective: "Recall runtime isolation" },
+      { concept_id: "networking", kind: "retrieval", minutes: 10, objective: "Recall container networking" },
+    ], deadline_status: "on_track", rationale: "Review both weak points.", session_date: "2026-09-01", total_minutes: 20 });
+    apiMocks.assessSession.mockResolvedValueOnce({ results: [{ concept_id: "runtime", score: 1, correct: 1, total: 1, evidence: ["Runtime evidence"], misconceptions: [] }, { concept_id: "networking", score: 1, correct: 1, total: 1, evidence: ["Networking evidence"], misconceptions: [] }], learner_model: learnerModel });
+
+    render(<TodaySession goalId="goal-1" goalTitle="Containers" />);
+    await screen.findByText("Recall runtime isolation");
+    const fields = screen.getAllByRole("textbox");
+    const submit = screen.getByRole("button", { name: "Submit assessment" });
+    expect(submit).toBeDisabled();
+    fireEvent.change(fields[0], { target: { value: "A process" } });
+    expect(submit).toBeDisabled();
+    fireEvent.change(fields[1], { target: { value: "A virtual network" } });
+    expect(submit).not.toBeDisabled();
+    fireEvent.click(submit);
+
+    await waitFor(() => expect(apiMocks.assessSession).toHaveBeenCalledWith("session-1", {
+      answers: [{ item_id: "runtime", answer: "A process" }, { item_id: "networking", answer: "A virtual network" }],
+    }));
+    expect(apiMocks.assessSession).toHaveBeenCalledTimes(1);
+  });
+
   it("disables mutations when the API has not assigned a session ID", async () => {
     apiMocks.getGoal.mockResolvedValueOnce({ goal: { id: "goal-1", title: "Containers", purpose: "Build reliable services", deadline: "2026-09-20", daily_minutes: 30, preferred_formats: ["examples"] }, concepts: [{ id: "containers", name: "Containers", importance: 1, estimated_minutes: 15, prerequisites: [] }], learner_model: { goal_id: "goal-1", concepts: {} } });
     apiMocks.getNextSession.mockResolvedValueOnce({

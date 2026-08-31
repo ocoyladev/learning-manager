@@ -80,18 +80,7 @@ async function call<Operation extends keyof operations>(
     return await response.json();
   } catch (error: unknown) {
     if (error instanceof SyntaxError) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      const retry = await fetch(`${API_BASE}${path}`, {
-        method,
-        headers: body === undefined ? undefined : { "Content-Type": "application/json" },
-        body: body === undefined ? undefined : JSON.stringify(body),
-        cache: "no-store",
-      });
-      if (!retry.ok) {
-        const payload: unknown = await retry.json().catch(() => undefined);
-        throw new ApiError(retry.status, errorMessage(payload, `Request failed (${retry.status})`));
-      }
-      return retry.json();
+      throw new Error(`Invalid JSON response for ${method} ${path}: ${error.message}`, { cause: error });
     }
     throw error;
   }
