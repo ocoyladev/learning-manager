@@ -25,6 +25,11 @@ class CostSummary:
     latency_p50_ms: int
     latency_p95_ms: int
 
+    @property
+    def total_cost_usd(self) -> float:
+        """Compatibility alias for consumers that call the aggregate total explicit."""
+        return self.cost_usd
+
 
 def _percentile(values: list[int], percentile: float) -> int:
     if not values:

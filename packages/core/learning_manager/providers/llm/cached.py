@@ -9,13 +9,18 @@ import tempfile
 from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Protocol
 
 from pydantic import ValidationError
 
 from learning_manager.contracts import LLMProvider, LLMResponse
+from learning_manager.providers.llm.meter import CostMeter
 
 CacheMode = Literal["replay", "live"]
+
+
+class _Trajectory(Protocol):
+    def step(self, step: str, **fields: object) -> None: ...
 
 
 class CassetteError(RuntimeError):
@@ -58,6 +63,9 @@ class CachedLLMProvider:
         cassette_dir: Path,
         mode: CacheMode,
         model: str = "gemini-2.5-flash",
+        *,
+        meter: CostMeter | None = None,
+        trajectory: _Trajectory | None = None,
     ) -> None:
         if mode not in ("live", "replay"):
             raise ValueError(f"Unsupported cassette mode: {mode}")
@@ -67,6 +75,8 @@ class CachedLLMProvider:
         self._cassette_dir = Path(cassette_dir)
         self._mode = mode
         self._model = model
+        self._meter = meter
+        self._trajectory = trajectory
 
     def complete(
         self,
@@ -77,7 +87,7 @@ class CachedLLMProvider:
         json_schema: dict[str, object] | None = None,
         temperature: float = 0.0,
     ) -> LLMResponse:
-        request = {
+        request: dict[str, object] = {
             "model": self._model,
             "system": system,
             "user": user,
@@ -96,7 +106,7 @@ class CachedLLMProvider:
         cassette_path = self._cassette_dir / f"{key[:16]}.json"
 
         if self._mode == "replay":
-            return self._read(cassette_path, key)
+            return self._read(cassette_path, key, schema_name)
 
         if self._inner is None:
             raise RuntimeError("Live cassette mode requires an inner LLM provider")
@@ -108,9 +118,9 @@ class CachedLLMProvider:
             temperature=temperature,
         )
         self._write(cassette_path, request, response)
-        return response.model_copy(update={"cache_hit": False})
+        return self._record(response.model_copy(update={"cache_hit": False}), schema_name)
 
-    def _read(self, path: Path, key: str) -> LLMResponse:
+    def _read(self, path: Path, key: str, schema_name: str | None) -> LLMResponse:
         if not path.exists():
             raise CassetteMissError(
                 f"Cassette no encontrado para {key}. Ejecuta 'make record' con GEMINI_API_KEY, "
@@ -128,7 +138,22 @@ class CachedLLMProvider:
             loaded = LLMResponse.model_validate(response)
         except (OSError, KeyError, TypeError, ValueError, ValidationError) as exc:
             raise CassetteError(f"Cassette malformed: {path.name}") from exc
-        return loaded.model_copy(update={"cache_hit": True})
+        return self._record(loaded.model_copy(update={"cache_hit": True}), schema_name)
+
+    def _record(self, response: LLMResponse, schema_name: str | None) -> LLMResponse:
+        if self._meter is not None:
+            self._meter.record(response)
+        if self._trajectory is not None:
+            self._trajectory.step(
+                "llm_call",
+                model=response.model,
+                cache_hit=response.cache_hit,
+                input_tokens=response.input_tokens,
+                output_tokens=response.output_tokens,
+                latency_ms=response.latency_ms,
+                schema_name=schema_name,
+            )
+        return response
 
     def _write(self, path: Path, request: dict[str, object], response: LLMResponse) -> None:
         self._cassette_dir.mkdir(parents=True, exist_ok=True)
