@@ -71,12 +71,12 @@ class _ResearchResponse(BaseModel):
 
 
 class _GoalUpdateRequest(BaseModel):
-    daily_minutes: StrictInt | None = Field(default=None, ge=5, le=240)
-    paused: StrictBool | None = None
+    daily_minutes: StrictInt = Field(default=30, ge=5, le=240)
+    paused: StrictBool = False
 
     @model_validator(mode="after")
     def require_update(self) -> _GoalUpdateRequest:
-        if self.daily_minutes is None and self.paused is None:
+        if not self.model_fields_set:
             raise ValueError("At least one goal setting must be provided.")
         return self
 
@@ -239,9 +239,9 @@ def sources(goal_id: str) -> _ResearchResponse:
 @app.patch("/goals/{goal_id}", response_model=_GoalUpdateResponse)
 def update_goal(goal_id: str, request: _GoalUpdateRequest) -> _GoalUpdateResponse:
     goal = _goal(goal_id)
-    if request.daily_minutes is not None:
+    if "daily_minutes" in request.model_fields_set:
         goal = goal.model_copy(update={"daily_minutes": request.daily_minutes})
-    return _GoalUpdateResponse(goal=goal, paused=request.paused or False)
+    return _GoalUpdateResponse(goal=goal, paused=request.paused)
 
 
 @app.post(

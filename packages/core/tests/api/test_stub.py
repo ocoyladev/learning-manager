@@ -240,6 +240,30 @@ def test_human_controls_validate_request_boundaries() -> None:
     )
 
 
+def test_human_controls_reject_explicit_null_and_coerce_no_strict_scalars() -> None:
+    assert (
+        request("PATCH", "/goals/demo", json={"daily_minutes": 30, "paused": None}).status_code
+        == 422
+    )
+    assert (
+        request("PATCH", "/goals/demo", json={"daily_minutes": None, "paused": True}).status_code
+        == 422
+    )
+    assert request("PATCH", "/goals/demo", json={"daily_minutes": True}).status_code == 422
+    assert request("PATCH", "/goals/demo", json={"paused": 1}).status_code == 422
+    assert request("POST", "/sessions/demo/feedback", json={"appropriate": 1}).status_code == 422
+
+    minutes_only = request("PATCH", "/goals/demo", json={"daily_minutes": 45})
+    assert minutes_only.status_code == 200
+    assert minutes_only.json()["goal"]["daily_minutes"] == 45
+    assert minutes_only.json()["paused"] is False
+
+    paused_only = request("PATCH", "/goals/demo", json={"paused": True})
+    assert paused_only.status_code == 200
+    assert paused_only.json()["goal"]["daily_minutes"] == 30
+    assert paused_only.json()["paused"] is True
+
+
 def test_openapi_matches_generated_app_schema_and_is_stable() -> None:
     schema_path = Path(__file__).parents[4] / "openapi.json"
     schema = json.loads(schema_path.read_text())

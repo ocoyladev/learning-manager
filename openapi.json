@@ -846,28 +846,16 @@
       "_GoalUpdateRequest": {
         "properties": {
           "daily_minutes": {
-            "anyOf": [
-              {
-                "maximum": 240.0,
-                "minimum": 5.0,
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Daily Minutes"
+            "default": 30,
+            "maximum": 240.0,
+            "minimum": 5.0,
+            "title": "Daily Minutes",
+            "type": "integer"
           },
           "paused": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Paused"
+            "default": false,
+            "title": "Paused",
+            "type": "boolean"
           }
         },
         "title": "_GoalUpdateRequest",
