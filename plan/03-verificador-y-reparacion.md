@@ -290,9 +290,9 @@ def test_fallback_is_reproducible() -> None:
 
 ## ✅ Criterio de salida
 
-- [ ] Los 7 códigos de `ViolationCode` tienen al menos un test que los dispara
-- [ ] `test_fallback_output_always_validates` verde con 20 modelos aleatorios
-- [ ] `run_with_repair` registra todos los intentos en la trayectoria
-- [ ] `make check` en verde
+- [x] Los 7 códigos de `ViolationCode` tienen al menos un test que los dispara
+- [x] `test_fallback_output_always_validates` verde con 20 modelos aleatorios
+- [x] `run_with_repair` registra todos los intentos en la trayectoria
+- [x] `make check` en verde
 - [ ] **Anota la cifra de partida para el changelog:** cuántos de los 11 casos de NSDQ pasa el
       planner *sin* verificador (se mide en la F14; aquí solo se deja el gancho)
