@@ -116,4 +116,4 @@ def test_the_question_targets_the_recorded_misconception() -> None:
 - [ ] Telegram envía y recibe, verificado a mano una vez con un bot real
 - [ ] Nada se envía con `NOTIFY_LIVE=false`
 - [ ] Responder una pregunta proactiva mueve el learner model y reprograma el repaso
-- [ ] Documenta en `REPRODUCTION.md` los 3 pasos para que un juez lo pruebe con su propio bot
+- [x] Documenta en `REPRODUCTION.md` los 3 pasos para que un juez lo pruebe con su propio bot
