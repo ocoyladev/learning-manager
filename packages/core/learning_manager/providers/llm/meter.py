@@ -41,7 +41,8 @@ def _percentile(values: list[int], percentile: float) -> int:
     lower = int(rank)
     upper = min(lower + 1, len(values) - 1)
     fraction = rank - lower
-    return int(round(values[lower] + fraction * (values[upper] - values[lower])))
+    # Report whole milliseconds by truncating the interpolated value.
+    return int(values[lower] + fraction * (values[upper] - values[lower]))
 
 
 class CostMeter:

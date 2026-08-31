@@ -4,6 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from learning_manager.contracts import LLMResponse
+from learning_manager.providers.llm import factory as factory_module
 from learning_manager.providers.llm.cached import CachedLLMProvider
 from learning_manager.providers.llm.factory import ConfigError, build_llm
 from learning_manager.providers.llm.fake import FakeLLM
@@ -129,3 +131,54 @@ def test_live_mode_without_api_key_fails_with_clear_message(tmp_path: Path) -> N
             meter=CostMeter(),
             trajectory=None,
         )
+
+
+def test_factory_replay_records_meter_and_trajectory_exactly_once(tmp_path: Path) -> None:
+    CachedLLMProvider(
+        inner=FakeLLM(responses=["saved"]), cassette_dir=tmp_path, mode="live"
+    ).complete(system="s", user="u", schema_name="Replay")
+    meter = CostMeter()
+    events: list[tuple[str, dict[str, object]]] = []
+    trajectory = SimpleNamespace(step=lambda name, **fields: events.append((name, fields)))
+    provider = build_llm(
+        Settings(llm_mode="replay", cassette_dir=tmp_path), meter=meter, trajectory=trajectory
+    )
+
+    provider.complete(system="s", user="u", schema_name="Replay")
+
+    assert meter.totals().calls == 1
+    assert meter.totals().cache_hits == 1
+    assert [name for name, _fields in events] == ["llm_call"]
+
+
+def test_factory_live_records_meter_and_trajectory_exactly_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class BoundaryProvider:
+        def complete(self, **_kwargs: object) -> LLMResponse:
+            return LLMResponse(
+                text="live",
+                parsed=None,
+                model="gemini-2.5-flash",
+                input_tokens=2,
+                output_tokens=3,
+                cost_usd=0.0,
+                latency_ms=4,
+                cache_hit=False,
+            )
+
+    monkeypatch.setattr(factory_module, "GeminiProvider", lambda **_kwargs: BoundaryProvider())
+    meter = CostMeter()
+    events: list[tuple[str, dict[str, object]]] = []
+    trajectory = SimpleNamespace(step=lambda name, **fields: events.append((name, fields)))
+    provider = build_llm(
+        Settings(llm_mode="live", gemini_api_key="test-key", cassette_dir=tmp_path),
+        meter=meter,
+        trajectory=trajectory,
+    )
+
+    provider.complete(system="s", user="u")
+
+    assert meter.totals().calls == 1
+    assert meter.totals().cache_hits == 0
+    assert [name for name, _fields in events] == ["llm_call"]

@@ -63,3 +63,11 @@ def test_empty_meter_has_zero_percentiles() -> None:
 
     assert totals.calls == 0
     assert totals.latency_p50_ms == 0 and totals.latency_p95_ms == 0
+
+
+def test_meter_reports_p95_for_multiple_latency_samples() -> None:
+    meter = CostMeter()
+    for latency in range(10, 21):
+        meter.record(LLMResponse(text="x", model="fake", latency_ms=latency))
+
+    assert meter.totals().latency_p95_ms == 19
