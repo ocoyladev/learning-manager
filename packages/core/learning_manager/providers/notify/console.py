@@ -36,7 +36,12 @@ class ConsoleProvider:
         for line in path.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 item = json.loads(line)
-                replies.append(Reply(user_ref=item["user_ref"], text=item["text"],
-                                     received_at=datetime.now(UTC),
-                                     message_ref=item.get("message_ref")))
+                replies.append(
+                    Reply(
+                        user_ref=item["user_ref"],
+                        text=item["text"],
+                        received_at=datetime.now(UTC),
+                        message_ref=item.get("message_ref"),
+                    )
+                )
         return replies

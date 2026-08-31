@@ -17,8 +17,15 @@ def test_send_posts_inline_keyboard(monkeypatch, respx_mock) -> None:
 
 def test_poll_maps_callback_queries(respx_mock) -> None:
     respx_mock.get(url__regex=r".*/getUpdates").respond(
-        json={"ok": True, "result": [{"update_id": 5, "callback_query": {
-            "data": "A", "message": {"chat": {"id": "chat"}}}}]}
+        json={
+            "ok": True,
+            "result": [
+                {
+                    "update_id": 5,
+                    "callback_query": {"data": "A", "message": {"chat": {"id": "chat"}}},
+                }
+            ],
+        }
     )
     assert TelegramProvider("tok", "chat").poll_replies()[0].text == "A"
 

@@ -48,7 +48,12 @@ class TelegramProvider:
                 continue
             text = callback.get("data") if callback else message.get("text")
             if text is not None:
-                replies.append(Reply(user_ref=self.chat_id, text=str(text),
-                                     received_at=datetime.now(UTC),
-                                     message_ref=str(update["update_id"])))
+                replies.append(
+                    Reply(
+                        user_ref=self.chat_id,
+                        text=str(text),
+                        received_at=datetime.now(UTC),
+                        message_ref=str(update["update_id"]),
+                    )
+                )
         return replies
