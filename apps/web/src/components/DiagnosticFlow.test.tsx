@@ -56,4 +56,38 @@ describe("DiagnosticFlow", () => {
     expect(screen.getByText(refreshedDashboard.projected_completion)).toBeInTheDocument();
     expect(screen.getByText(refreshedDashboard.deadline_status)).toBeInTheDocument();
   });
+
+  it("preserves a saved diagnostic when readiness refresh fails and retries only the dashboard", async () => {
+    apiMocks.startDiagnostic.mockResolvedValueOnce({
+      items: [{ id: "first", concept_id: "containers", expected: "A", explanation: "", question: "Final question", options: ["A"] }],
+    });
+    const acceptedModel: LearnerModel = { goal_id: "goal-1", concepts: {} };
+    apiMocks.submitDiagnostic.mockResolvedValueOnce({ learner_model: acceptedModel });
+    let rejectDashboard: (reason?: unknown) => void = () => undefined;
+    const failedRefresh = new Promise<Dashboard>((_, reject) => { rejectDashboard = reject; });
+    apiMocks.getDashboard.mockReturnValueOnce(failedRefresh);
+    const refreshedDashboard: Dashboard = { deadline_status: "on_track", estimated_sessions: 3, next_review: "2026-09-04", on_track: true, progress: 0.4, projected_completion: "2026-09-22", strong: ["containers"], weak: [], why: "Your refreshed route is ready." };
+
+    render(<DiagnosticFlow goalId="goal-1" concepts={concepts} initialModel={learnerModel} dashboard={dashboard} />);
+    fireEvent.click(screen.getByRole("button", { name: "Begin diagnostic" }));
+    await screen.findByRole("heading", { name: "Final question" });
+    fireEvent.click(screen.getByRole("radio", { name: "A" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save answer" }));
+
+    await waitFor(() => expect(apiMocks.submitDiagnostic).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(apiMocks.getDashboard).toHaveBeenCalledWith("goal-1"));
+    expect(screen.queryByRole("button", { name: "Save answer" })).not.toBeInTheDocument();
+    rejectDashboard(new Error("dashboard unavailable"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Diagnostic saved, but readiness could not be refreshed.");
+    expect(screen.queryByText(dashboard.why)).not.toBeInTheDocument();
+
+    apiMocks.getDashboard.mockResolvedValueOnce(refreshedDashboard);
+    fireEvent.click(screen.getByRole("button", { name: "Retry readiness" }));
+    await screen.findByText(refreshedDashboard.why);
+    expect(apiMocks.getDashboard).toHaveBeenCalledTimes(2);
+    expect(apiMocks.getDashboard).toHaveBeenLastCalledWith("goal-1");
+    expect(apiMocks.submitDiagnostic).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText("Diagnostic saved, but readiness could not be refreshed.")).not.toBeInTheDocument();
+    expect(screen.getByText(String(refreshedDashboard.estimated_sessions))).toBeInTheDocument();
+  });
 });
