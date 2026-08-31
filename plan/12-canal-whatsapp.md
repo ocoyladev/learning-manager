@@ -74,8 +74,8 @@ def test_missing_credentials_fail_fast_with_a_clear_message() -> None:
         WhatsAppProvider(None, None)
 ```
 
-- [ ] **Paso 2–4:** implementar y verificar
-- [ ] **Paso 5: commit** → `feat(notify): add WhatsApp Cloud API provider`
+- [x] **Paso 2–4:** implementar y verificar
+- [x] **Paso 5: commit** → `feat(notify): add WhatsApp Cloud API provider`
 
 ---
 
@@ -84,7 +84,7 @@ def test_missing_credentials_fail_fast_with_a_clear_message() -> None:
 - [ ] Endpoint `POST /webhooks/whatsapp` con verificación de firma `X-Hub-Signature-256`
 - [ ] `GET /webhooks/whatsapp` para el desafío de verificación de Meta
 - [ ] Test: una firma inválida devuelve 403 y **no** procesa el mensaje
-- [ ] Documentar en `REPRODUCTION.md` que este canal requiere HTTPS público y por tanto **no es
+- [x] Documentar en `REPRODUCTION.md` que este canal requiere HTTPS público y por tanto **no es
       el camino reproducible**; el camino reproducible es Telegram o consola
 - [ ] Commit → `feat(api): add verified WhatsApp webhook endpoint`
 

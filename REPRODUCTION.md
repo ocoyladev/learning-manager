@@ -26,3 +26,16 @@ messages are written as JSON files and scripted replies can be placed in
 
 Live sending is disabled unless `NOTIFY_LIVE=true`; enable it only after confirming the target
 chat and the simulation mode.
+
+## WhatsApp Cloud API (optional, non-reproducible live channel)
+
+The repository includes a `WhatsAppProvider` that uses only Meta's official Cloud API. Its
+transport is covered by simulated tests, including the three-button limit and list-message
+fallback. Keep `NOTIFY_LIVE=false` for the reproducible path.
+
+A live WhatsApp demo requires human-only setup in Meta for Developers: create the WhatsApp app,
+obtain a test number, `PHONE_NUMBER_ID`, access token, and an allowed destination number. Store
+the resulting `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_ACCESS_TOKEN` only in `.env`; never commit
+them. Receiving replies additionally requires a publicly reachable HTTPS webhook and Meta's
+signature verification configuration. This is not the judge's reproducible path: use the
+console provider or Telegram instead.
