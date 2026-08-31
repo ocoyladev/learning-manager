@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from datetime import date
-from typing import Literal
+from typing import Literal, cast
 
 from pydantic import BaseModel
 
@@ -66,6 +66,11 @@ def check_claims(
                 candidates, key=lambda item: (-score_source(item[0], today), item[0].id)
             )[0]
             results.append(
-                ClaimVerdict(claim=claim, verdict=verdict, source_id=source.id, reason=reason)
+                ClaimVerdict(
+                    claim=claim,
+                    verdict=cast(Literal["supported", "outdated", "unsupported"], verdict),
+                    source_id=source.id,
+                    reason=reason,
+                )
             )
     return results
