@@ -15,7 +15,7 @@
 
 **Ficheros:** `providers/notify/console.py`; Test `tests/providers/test_console_notify.py`
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 def test_send_writes_a_structured_record_and_returns_a_ref(tmp_path) -> None:
@@ -31,9 +31,9 @@ def test_poll_replies_reads_scripted_answers_for_simulation(tmp_path) -> None:
     assert ConsoleProvider(out_dir=tmp_path).poll_replies()[0].text == "ClusterIP"
 ```
 
-- [ ] **Paso 2–4:** implementar y verificar. Es el provider por defecto: hace que
+- [x] **Paso 2–4:** implementar y verificar. Es el provider por defecto: hace que
       `docker compose up` funcione sin ninguna credencial.
-- [ ] **Paso 5: commit** → `feat(notify): add console notification provider`
+- [x] **Paso 5: commit** → `feat(notify): add console notification provider`
 
 ---
 
@@ -43,7 +43,7 @@ def test_poll_replies_reads_scripted_answers_for_simulation(tmp_path) -> None:
 
 **Interfaces producidas:** `TelegramProvider(bot_token, chat_id)` — implementa `NotificationProvider`
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 def test_send_posts_an_inline_keyboard(respx_mock) -> None:
@@ -74,9 +74,9 @@ def test_nothing_is_sent_when_notify_live_is_false(monkeypatch, respx_mock) -> N
     assert len(respx_mock.calls) == 0        # regla R4
 ```
 
-- [ ] **Paso 2–4:** implementar con long polling (`getUpdates` con `offset`), teclado inline,
+- [x] **Paso 2–4:** implementar con long polling (`getUpdates` con `offset`), teclado inline,
       y el guardarraíl de `NOTIFY_LIVE`. Sin webhook: no requiere HTTPS público.
-- [ ] **Paso 5: commit** → `feat(notify): add Telegram provider with long polling`
+- [x] **Paso 5: commit** → `feat(notify): add Telegram provider with long polling`
 
 ---
 
