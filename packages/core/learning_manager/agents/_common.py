@@ -24,6 +24,7 @@ def complete_json[T: BaseModel](
         "CurriculumPlanner": "curriculum_planner.md",
         "Diagnostician": "diagnostician.md",
         "GoalManager": "goal_manager.md",
+        "Researcher": "researcher.md",
         "Teacher": "teaching.md",
     }
     prompt_path = Path(__file__).with_name("prompts") / prompt_names[agent]
