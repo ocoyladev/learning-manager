@@ -39,3 +39,11 @@ def test_assessor_and_teacher_parse_typed_outputs_and_log(tmp_path: Path) -> Non
     assert out.content and all(call["temperature"] == 0.0 for call in fake.calls)
     records = [json.loads(line) for line in (tmp_path / "teacher.jsonl").read_text().splitlines()]
     assert records[-1]["step"] == "result"
+
+def test_retrieval_handles_concept_absent_from_learner_model(tmp_path: Path) -> None:
+    item = AssessmentItem(id="q", concept_id="a", question="?", expected="yes")
+    fake = Fake({"items": [item.model_dump()]})
+    out = Assessor(fake, tr(tmp_path)).retrieval_question(
+        LearnerModel(goal_id="g"), __import__("learning_manager.domain.concept_graph", fromlist=["ConceptGraph"]).ConceptGraph([Concept(id="a", name="A")]), date(2026, 9, 1)
+    )
+    assert out.concept_id == "a"

@@ -18,6 +18,17 @@ class Assessor:
             out.append(AssessmentResult(concept_id=i.concept_id, score=float(correct), correct=int(correct), total=1, misconceptions=[] if correct else [i.explanation or "Answer indicates a misconception"], evidence=[i.id]))
         return out
     def retrieval_question(self, model: LearnerModel, graph: ConceptGraph, today: date) -> AssessmentItem:
-        state = min((model.concepts.get(c.id) for c in graph.concepts if c.id in model.concepts), key=lambda s: (s.mastery, -len(s.misconceptions)))
+        states = [
+            model.concepts.get(
+                concept.id,
+                LearnerConceptState(
+                    concept_id=concept.id,
+                    mastery=0.0,
+                    confidence=0.0,
+                    state=ConceptState.UNSEEN,
+                ),
+            )
+            for concept in graph.concepts
+        ]
+        state = min(states, key=lambda s: (s.mastery, -len(s.misconceptions)))
         return complete_json(self._llm, self._trajectory, "Assessor", "Create one retrieval question.", f"Concept {state.concept_id}; misconceptions: {state.misconceptions}; today: {today}", ItemDraft).items[0]
-
