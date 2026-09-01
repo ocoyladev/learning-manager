@@ -37,4 +37,5 @@ def test_assessor_and_teacher_parse_typed_outputs_and_log(tmp_path: Path) -> Non
     source = Source(id="s", url="https://x", title="X", authority=AuthorityType.BOOK, retrieved_at=date(2026, 9, 1))
     out = Teacher(fake, tr(tmp_path, "teacher")).render(SessionBlock(kind=BlockKind.CONCEPT, concept_id="a", minutes=5, objective="learn"), [source], LearnerModel(goal_id="g"), ["text"])
     assert out.content and all(call["temperature"] == 0.0 for call in fake.calls)
-    assert json.loads((tmp_path / "teacher.jsonl").read_text())[-1]["step"] == "result"
+    records = [json.loads(line) for line in (tmp_path / "teacher.jsonl").read_text().splitlines()]
+    assert records[-1]["step"] == "result"
