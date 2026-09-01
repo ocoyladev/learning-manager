@@ -41,7 +41,7 @@ Test `tests/agents/test_goal_manager.py`
 
 **Interfaces producidas:** `GoalManager.run(raw_goal: str, purpose: str, deadline: date, daily_minutes: int, preferred_formats: list[str]) -> tuple[LearningGoal, list[Concept]]`
 
-- [ ] **Paso 1: test que falla** — con `FakeLLM` devolviendo un grafo fijo, verificar que:
+- [x] **Paso 1: test que falla** — con `FakeLLM` devolviendo un grafo fijo, verificar que:
   - el `LearningGoal` sale con los campos del usuario intactos (el agente **no** inventa deadline);
   - los `Concept` forman un grafo válido (se construye `ConceptGraph` sin excepción);
   - si el LLM devuelve un grafo con un ciclo, el agente reintenta y, si persiste, lanza
@@ -62,13 +62,13 @@ def test_cyclic_graph_from_model_is_repaired_then_raises(fake_llm_always_cyclic)
         GoalManager(fake_llm_always_cyclic, _rec()).run(...)
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar.** El prompt pide: descomponer la meta en 8–15 conceptos con
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar.** El prompt pide: descomponer la meta en 8–15 conceptos con
       prerrequisitos, `importance` y `estimated_minutes`; y derivar `success_criteria`
       observables desde `purpose`. Validación: grafo acíclico, prerrequisitos existentes,
       entre 5 y 25 conceptos. Reparación con `run_with_repair`.
-- [ ] **Paso 4: ejecutar** → verde
-- [ ] **Paso 5: commit** → `git commit -m "feat(agents): add GoalManager"`
+- [x] **Paso 4: ejecutar** → verde
+- [x] **Paso 5: commit** → `git commit -m "feat(agents): add GoalManager"`
 
 ---
 
@@ -84,7 +84,7 @@ Test `tests/agents/test_diagnostician.py`
 > §9 de la especificación: no empezar por el capítulo 1, comprobar primero qué sabe.
 > Failure mode §47.1: el alumno ya domina casi todo — el diagnóstico debe detectarlo.
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 def test_diagnostic_covers_every_concept_at_least_once() -> None:
@@ -110,12 +110,12 @@ def test_grading_is_deterministic_and_does_not_call_the_llm() -> None:
     assert counting_llm.calls == 0
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar.** `generate` usa el LLM. **`grade` NO usa el LLM**: compara
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar.** `generate` usa el LLM. **`grade` NO usa el LLM**: compara
       `answer` con `item.expected`, agrega por concepto y construye el `LearnerModel` con
       `derive_state`. Los conceptos sin ítem quedan `UNSEEN` con mastery 0.
-- [ ] **Paso 4: ejecutar** → verde
-- [ ] **Paso 5: commit** → `git commit -m "feat(agents): add Diagnostician with deterministic grading"`
+- [x] **Paso 4: ejecutar** → verde
+- [x] **Paso 5: commit** → `git commit -m "feat(agents): add Diagnostician with deterministic grading"`
 
 ---
 
@@ -130,7 +130,7 @@ Test `tests/agents/test_curriculum_planner.py`
 > **Es el agente que la métrica primaria califica.** Todo lo demás existe para que este decida
 > bien. Su prompt es el artefacto que más se itera en el changelog.
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 def test_returns_the_llm_decision_when_it_validates(fake_llm_valid_session) -> None:
@@ -170,15 +170,15 @@ def test_rationale_is_non_empty_and_mentions_a_concept(fake_llm_valid_session) -
     assert any(c.id in decision.rationale or c.name in decision.rationale for c in CONCEPTS)
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar.** El prompt recibe: meta, deadline, `today`, minutos diarios,
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar.** El prompt recibe: meta, deadline, `today`, minutos diarios,
       learner model completo, conceptos desbloqueados, repasos vencidos, misconceptions y
       `source_ids` disponibles. Exige devolver `NextSessionDecision` en JSON. `deadline_status`
       lo calcula **el código** con `feasibility.deadline_status`, no el modelo — sobrescribir
       lo que diga el LLM. Envolver todo en `run_with_repair` con
       `fallback=lambda: deterministic_session(...)`.
-- [ ] **Paso 4: ejecutar** → verde
-- [ ] **Paso 5: commit** → `git commit -m "feat(agents): add CurriculumPlanner with verification loop"`
+- [x] **Paso 4: ejecutar** → verde
+- [x] **Paso 5: commit** → `git commit -m "feat(agents): add CurriculumPlanner with verification loop"`
 
 ---
 
@@ -195,7 +195,7 @@ Test `tests/agents/test_assessor.py`
 > `retrieval_question` es el Diferenciador 5 (§12): la notificación proactiva **no** es
 > "recuerda estudiar", sino una pregunta derivada de la evidencia más débil.
 
-- [ ] **Paso 1: test que falla**
+- [x] **Paso 1: test que falla**
 
 ```python
 def test_retrieval_question_targets_the_weakest_evidence() -> None:
@@ -218,12 +218,12 @@ def test_grading_extracts_misconceptions_only_for_wrong_answers() -> None:
     assert all(not r.misconceptions for r in results if r.score == 1.0)
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar.** Selección del concepto objetivo: **determinista** (menor mastery
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar.** Selección del concepto objetivo: **determinista** (menor mastery
       entre los ya vistos, desempate por misconception presente y por `last_assessed` más
       antiguo). Solo la redacción de la pregunta usa el LLM.
-- [ ] **Paso 4: ejecutar** → verde
-- [ ] **Paso 5: commit** → `git commit -m "feat(agents): add Assessor with evidence-driven retrieval"`
+- [x] **Paso 4: ejecutar** → verde
+- [x] **Paso 5: commit** → `git commit -m "feat(agents): add Assessor with evidence-driven retrieval"`
 
 ---
 
@@ -238,7 +238,7 @@ Test `tests/agents/test_teaching.py`
 > `CurriculumPlanner` y comparte su trayectoria. Formatos del MVP: texto conciso, ejemplo
 > trabajado, ejercicio, pregunta de recuperación. **Sin vídeo ni podcast** (§23).
 
-- [ ] **Paso 1: test que falla** — cada bloque devuelto tiene `content` no vacío y
+- [x] **Paso 1: test que falla** — cada bloque devuelto tiene `content` no vacío y
       `source_ids` ⊆ ids de las fuentes recibidas (no puede citar lo que no se le dio).
 
 ```python
@@ -248,17 +248,17 @@ def test_rendered_block_cannot_cite_a_source_it_was_not_given() -> None:
     assert set(out.source_ids) <= {SRC_A.id}
 ```
 
-- [ ] **Paso 2: ejecutar y confirmar el fallo**
-- [ ] **Paso 3: implementar** con filtrado duro de `source_ids` tras la respuesta del modelo.
-- [ ] **Paso 4: ejecutar** → verde
-- [ ] **Paso 5: commit** → `git commit -m "feat(agents): add teaching block renderer"`
+- [x] **Paso 2: ejecutar y confirmar el fallo**
+- [x] **Paso 3: implementar** con filtrado duro de `source_ids` tras la respuesta del modelo.
+- [x] **Paso 4: ejecutar** → verde
+- [x] **Paso 5: commit** → `git commit -m "feat(agents): add teaching block renderer"`
 
 ---
 
 ## ✅ Criterio de salida
 
-- [ ] Los 5 agentes existen, cada uno con su prompt en `agents/prompts/`
-- [ ] Todos los tests usan `FakeLLM`: la suite corre sin red y sin keys
-- [ ] `CurriculumPlanner` nunca devuelve una sesión inválida, ni con un LLM que siempre falla
-- [ ] Cada agente escribe su trayectoria
-- [ ] `make check` en verde
+- [x] Los 5 agentes existen, cada uno con su prompt en `agents/prompts/`
+- [x] Todos los tests usan `FakeLLM`: la suite corre sin red y sin keys
+- [x] `CurriculumPlanner` nunca devuelve una sesión inválida, ni con un LLM que siempre falla
+- [x] Cada agente escribe su trayectoria
+- [x] `make check` en verde
