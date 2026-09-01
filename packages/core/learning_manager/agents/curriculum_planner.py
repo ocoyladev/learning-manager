@@ -1,9 +1,16 @@
-# ruff: noqa: E501,F403,F405
 from __future__ import annotations
 
 from datetime import date
 
-from learning_manager.contracts import *
+from learning_manager.contracts import (
+    ConstraintViolation,
+    LearnerModel,
+    LearningGoal,
+    LLMProvider,
+    NextSessionDecision,
+    Source,
+    ViolationCode,
+)
 from learning_manager.domain.concept_graph import ConceptGraph
 from learning_manager.scheduler.feasibility import deadline_status
 from learning_manager.trajectory.logger import AgentTrajectory
@@ -26,14 +33,19 @@ class CurriculumPlanner:
         sources: list[Source],
         today: date,
     ) -> tuple[NextSessionDecision, RepairOutcome]:
-        base = f"Goal={goal.model_dump()} model={model.model_dump()} concepts={[c.model_dump() for c in graph.concepts]} sources={[s.id for s in sources]} today={today}"
+        source_ids = [source.id for source in sources]
+        base = (
+            f"Goal={goal.model_dump()} model={model.model_dump()} "
+            f"concepts={[concept.model_dump() for concept in graph.concepts]} "
+            f"sources={source_ids} today={today}"
+        )
 
         def produce(hint: str | None) -> NextSessionDecision:
             d = complete_json(
                 self._llm,
                 self._trajectory,
                 "CurriculumPlanner",
-                "Plan the next adaptive learning session.",
+                "",
                 base,
                 NextSessionDecision,
                 hint,
@@ -45,11 +57,27 @@ class CurriculumPlanner:
                 }
             )
 
+        def validate(decision: NextSessionDecision) -> list[ConstraintViolation]:
+            violations = validate_session(decision, goal, model, graph, today)
+            for block in decision.blocks:
+                for source_id in block.source_ids:
+                    if source_id not in source_ids:
+                        violations.append(
+                            ConstraintViolation(
+                                code=ViolationCode.UNSOURCED_CLAIM,
+                                concept_id=block.concept_id,
+                                message=(
+                                    f"{block.concept_id} references unavailable source {source_id}"
+                                ),
+                            )
+                        )
+            return violations
+
         outcome = run_with_repair(
             produce=produce,
-            validate=lambda d: validate_session(d, goal, model, graph, today),
+            validate=validate,
             repair_prompt=lambda vs: "; ".join(v.message for v in vs),
-            fallback=lambda: deterministic_session(goal, model, graph, today),
+            fallback=lambda: deterministic_session(goal, model, graph, today, source_ids),
             trajectory=self._trajectory,
         )
         return outcome.value, outcome

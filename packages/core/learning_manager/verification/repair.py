@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from json import JSONDecodeError
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
-from learning_manager.contracts import ConstraintViolation
+from learning_manager.contracts import ConstraintViolation, ViolationCode
 
 
 class RepairOutcome(BaseModel):
@@ -29,8 +30,17 @@ def run_with_repair(
     violations_per_attempt: list[list[ConstraintViolation]] = []
     hint: str | None = None
     for attempt in range(1, max_retries + 2):
-        value = produce(hint)
-        violations = validate(value)
+        try:
+            value = produce(hint)
+            violations = validate(value)
+        except (JSONDecodeError, ValidationError, ValueError) as exc:
+            violations = [
+                ConstraintViolation(
+                    code=ViolationCode.EMPTY_SESSION,
+                    message=f"Output validation failed: {exc}",
+                )
+            ]
+            value = None
         violations_per_attempt.append(violations)
         trajectory.step(
             "validation", attempt=attempt, violations=[v.model_dump() for v in violations]

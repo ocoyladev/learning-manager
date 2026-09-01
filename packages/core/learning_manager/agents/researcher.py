@@ -16,5 +16,5 @@ class Researcher:
 
     def research(self, topic: str, k: int = 8) -> list[Source]:
         sources = self._knowledge.research(topic, k=k)
-        self._trajectory.step("result", topic=topic, sources=sources)
+        self._trajectory.step("research_result", topic=topic, sources=sources)
         return sources

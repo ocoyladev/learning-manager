@@ -17,19 +17,25 @@ from learning_manager.scheduler.spacing import REVIEW_MINUTES, due_reviews, prio
 
 
 def deterministic_session(
-    goal: LearningGoal, model: LearnerModel, graph: ConceptGraph, today: date
+    goal: LearningGoal,
+    model: LearnerModel,
+    graph: ConceptGraph,
+    today: date,
+    source_ids: list[str] | None = None,
 ) -> NextSessionDecision:
+    supplied_source_ids = source_ids or []
     budget = goal.daily_minutes
     blocks: list[SessionBlock] = []
     due = prioritize_reviews(model, due_reviews(model, today), budget, graph)
     for cid in due:
         blocks.append(
             SessionBlock(
-                kind=BlockKind.REVIEW,
+                kind=BlockKind.REVIEW if supplied_source_ids else BlockKind.RETRIEVAL,
                 concept_id=cid,
                 minutes=REVIEW_MINUTES,
                 objective=f"Review {cid}",
                 content=None,
+                source_ids=supplied_source_ids[:1],
             )
         )
         budget -= REVIEW_MINUTES
@@ -41,6 +47,8 @@ def deterministic_session(
     for cid in unlocked:
         if budget <= 0:
             break
+        if not supplied_source_ids:
+            break
         concept = next(c for c in graph.concepts if c.id == cid)
         minutes = min(budget, concept.estimated_minutes)
         blocks.append(
@@ -50,7 +58,7 @@ def deterministic_session(
                 minutes=minutes,
                 objective=f"Learn {concept.name}",
                 content=None,
-                source_ids=["deterministic-fallback"],
+                source_ids=supplied_source_ids[:1],
             )
         )
         budget -= minutes
