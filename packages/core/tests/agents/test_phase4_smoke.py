@@ -4,6 +4,7 @@ from datetime import date
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from learning_manager.agents.assessor import Assessor
 from learning_manager.agents.diagnostician import Diagnostician
@@ -285,7 +286,7 @@ def test_researcher_records_deterministic_research_result(tmp_path: Path) -> Non
     assert records[-1]["step"] == "result"
 
 
-def test_researcher_uses_the_llm_to_filter_provider_sources_without_inventing_them(
+def test_researcher_uses_one_llm_call_for_a_valid_provider_source_selection(
     tmp_path: Path,
 ) -> None:
     class Knowledge:
@@ -297,7 +298,7 @@ def test_researcher_uses_the_llm_to_filter_provider_sources_without_inventing_th
         def fetch(self, source_id: str) -> str:
             return source_id
 
-    fake = Fake({"source_ids": ["src", "invented"]})
+    fake = Fake({"source_ids": ["src"]})
     trajectory = tr(tmp_path, "Researcher")
     result = Researcher(Knowledge(), fake, trajectory).research("pods", k=3)
 
@@ -311,9 +312,78 @@ def test_researcher_uses_the_llm_to_filter_provider_sources_without_inventing_th
         "provider_retrieval",
         "llm_call",
         "llm_result",
+        "validation",
+        "result",
         "result",
     ]
     assert records[-1]["sources"] == [_source().model_dump(mode="json")]
+
+
+def test_researcher_repairs_a_malformed_source_selection(tmp_path: Path) -> None:
+    class Knowledge:
+        def research(self, topic: str, *, k: int = 8) -> list[Source]:
+            return [_source()]
+
+        def fetch(self, source_id: str) -> str:
+            return source_id
+
+    fake = SequencedFake([{"source_ids": "src"}, {"source_ids": ["src"]}])
+    trajectory = tr(tmp_path, "Researcher")
+    try:
+        result = Researcher(Knowledge(), fake, trajectory).research("pods")
+    except ValidationError:
+        result = None
+
+    assert result == [_source()]
+    records = [
+        json.loads(line) for line in (tmp_path / "Researcher.jsonl").read_text().splitlines()
+    ]
+    assert [record["step"] for record in records].count("validation") == 2
+    assert any(record["step"] == "repair_prompt" for record in records)
+
+
+def test_researcher_repairs_unknown_selected_source_ids(tmp_path: Path) -> None:
+    class Knowledge:
+        def research(self, topic: str, *, k: int = 8) -> list[Source]:
+            return [_source()]
+
+        def fetch(self, source_id: str) -> str:
+            return source_id
+
+    fake = SequencedFake([{"source_ids": ["outside"]}, {"source_ids": ["src"]}])
+    trajectory = tr(tmp_path, "Researcher")
+    result = Researcher(Knowledge(), fake, trajectory).research("pods")
+
+    assert result == [_source()]
+    records = [
+        json.loads(line) for line in (tmp_path / "Researcher.jsonl").read_text().splitlines()
+    ]
+    validation = next(record for record in records if record["step"] == "validation")
+    assert validation["violations"][0]["code"] == "UNSOURCED_CLAIM"
+    assert any(record["step"] == "repair_prompt" for record in records)
+
+
+def test_researcher_falls_back_to_provider_sources_after_persistent_unknown_ids(
+    tmp_path: Path,
+) -> None:
+    class Knowledge:
+        def research(self, topic: str, *, k: int = 8) -> list[Source]:
+            return [_source()]
+
+        def fetch(self, source_id: str) -> str:
+            return source_id
+
+    trajectory = tr(tmp_path, "Researcher")
+    result = Researcher(
+        Knowledge(), SequencedFake([{"source_ids": ["outside"]}]), trajectory
+    ).research("pods")
+
+    assert result == [_source()]
+    records = [
+        json.loads(line) for line in (tmp_path / "Researcher.jsonl").read_text().splitlines()
+    ]
+    assert [record["step"] for record in records].count("validation") == 3
+    assert any(record["step"] == "fallback" for record in records)
 
 
 def test_goal_manager_reports_a_cycle_after_exhausting_repair(tmp_path: Path) -> None:
