@@ -16,6 +16,7 @@ class ConsoleProvider:
     def __init__(self, out_dir: str | Path = "./notifications") -> None:
         self.out_dir = Path(out_dir)
         self.out_dir.mkdir(parents=True, exist_ok=True)
+        self._reply_offset = 0
 
     def send(self, *, user_ref: str, message: str, options: list[str] | None = None) -> str:
         ref = uuid.uuid4().hex
@@ -33,7 +34,10 @@ class ConsoleProvider:
         if not path.exists():
             return []
         replies: list[Reply] = []
-        for line in path.read_text(encoding="utf-8").splitlines():
+        lines = path.read_text(encoding="utf-8").splitlines()
+        new_lines = lines[self._reply_offset :]
+        self._reply_offset = len(lines)
+        for line in new_lines:
             if line.strip():
                 item = json.loads(line)
                 replies.append(

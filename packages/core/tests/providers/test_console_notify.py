@@ -11,4 +11,6 @@ def test_send_writes_structured_record_and_returns_ref(tmp_path) -> None:
 
 def test_poll_replies_reads_scripted_answers(tmp_path) -> None:
     (tmp_path / "replies.jsonl").write_text('{"user_ref":"u1","text":"A"}\n')
-    assert ConsoleProvider(tmp_path).poll_replies()[0].text == "A"
+    provider = ConsoleProvider(tmp_path)
+    assert provider.poll_replies()[0].text == "A"
+    assert provider.poll_replies() == []
