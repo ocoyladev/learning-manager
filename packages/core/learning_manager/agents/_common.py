@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any, TypeVar
 
 from pydantic import BaseModel
@@ -22,6 +23,15 @@ def complete_json(
     hint: str | None = None,
 ) -> T:
     prompt = user if hint is None else f"{user}\n\nREPAIR:\n{hint}"
+    prompt_names = {
+        "GoalManager": "goal_manager.md",
+        "CurriculumPlanner": "curriculum_planner.md",
+        "Teacher": "teaching.md",
+    }
+    prompt_path = Path(__file__).with_name("prompts") / prompt_names.get(
+        agent, f"{agent.lower()}.md"
+    )
+    system = prompt_path.read_text(encoding="utf-8")
     response = llm.complete(
         system=system,
         user=prompt,
